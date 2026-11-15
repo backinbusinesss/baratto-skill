@@ -63,7 +63,7 @@ export const content: Content = {
     'In return I’d like to learn {want}.',
     'I’ve dreamed of learning {want} for ages.',
     'Looking for someone to teach me {want}, even from scratch.',
-    'My next goal? {want}.',
+    'My next goal? Learning {want}.',
     'Learning {want} would make me very happy.',
   ],
   bioClose: [

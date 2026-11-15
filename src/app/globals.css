@@ -292,15 +292,16 @@ h3 {
 .tear-tab {
   flex: 1 1 0;
   min-width: 0;
+  max-width: 3.4rem;
   padding: 0.55rem 0.25rem 0.6rem;
   border-left: 1.5px dashed var(--line-strong);
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 600;
-  font-stretch: 85%;
+  font-stretch: 80%;
   line-height: 1.1;
-  max-height: 7.5rem;
+  height: 5.6rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -311,6 +312,12 @@ h3 {
 }
 .tear-tab:last-child {
   border-left: none;
+}
+.tear-tab.blank {
+  font-family: var(--font-hand);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--faint);
 }
 .tear-tab.hit {
   background: var(--mint-soft);
@@ -445,4 +452,9 @@ input[type="range"] {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* le colonne di una griglia possono restringersi: i testi tagliati con i puntini non allargano la pagina */
+.grid > * {
+  min-width: 0;
 }

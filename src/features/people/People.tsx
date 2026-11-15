@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { CATEGORIES, type CategoryId } from '@/content/categories'
 import { comuneById } from '@/content/comuni'
+import { comuniWithin } from '@/domain/geo'
 import { SKILLS } from '@/content/skills'
 import type { SortKey } from '@/domain/matching'
 import { clampRadius, isPremium, limitsFor } from '@/domain/plans'
@@ -129,6 +130,7 @@ export function People() {
               selected={selected}
               onDot={setSelected}
               label={tr.t('people.mapHint')}
+              places={comuniWithin(city, me.radiusKm * 1.15).map((x) => x.comune)}
               dots={matches.map((m) => ({
                 id: m.person.id,
                 lat: m.person.lat,

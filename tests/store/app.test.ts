@@ -66,6 +66,14 @@ describe('store', () => {
     expect(r.result).toBe('balance')
   })
 
+  it('le proposte in arrivo non occupano i posti del piano gratuito', () => {
+    useApp.getState().enterDemo()
+    const s = useApp.getState()
+    const p = s.neighbors.find((n) => !s.exchanges.some((e) => e.personId === n.id))!
+    const r = s.propose({ personId: p.id, give: 'english', get: null, hours: 1, slots: ['2030-01-01T19:00'], mode: 'live', note: '' })
+    expect(r.result).toBe('ok')
+  })
+
   it('il simulatore risponde alle proposte e conclude lo scambio aggiornando le ore', () => {
     useApp.getState().completeOnboarding({ ...demoMe(), bio: '' })
     useApp.setState({ exchanges: [], plan: 'premium-monthly' })

@@ -1,5 +1,6 @@
 import { comuneById } from '@/content/comuni'
 import { BADGES, badgeProgress, EMPTY_STATS, earnedBadges } from '@/domain/badges'
+import { haversineKm } from '@/domain/geo'
 import { findMatches, modesCompatible, scoreMatch, type Seeker } from '@/domain/matching'
 import { generateNeighbors, getPeople } from '@/domain/people'
 import { canPropose, clampRadius, formatPrice, yearlySavingPct } from '@/domain/plans'
@@ -101,7 +102,8 @@ describe('abbinamento', () => {
     expect(a.map((p) => p.id)).toEqual(b.map((p) => p.id))
     expect(new Set(a.map((p) => p.id)).size).toBe(a.length)
     for (const p of a) {
-      expect(p.comuneId).toBe('lecce')
+      expect(haversineKm(p, comuneById('lecce')!)).toBeLessThan(12)
+      expect(comuneById(p.comuneId)).toBeDefined()
       for (const w of p.wants) expect(p.offers.some((o) => o.id === w)).toBe(false)
     }
     expect(a.some((p) => p.offers.some((o) => o.id === 'pc-repair'))).toBe(true)

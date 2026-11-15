@@ -153,6 +153,9 @@ export const allPeople = (neighbors: Person[]) => (neighbors.length ? [...getPeo
 
 export const isActive = (e: Exchange) => e.status === 'pending' || e.status === 'accepted' || e.status === 'countered'
 
+/** Scambi che occupano un posto del piano: confermati, o proposti da me e in attesa. */
+export const countsTowardLimit = (e: Exchange) => e.status === 'accepted' || (e.direction === 'out' && (e.status === 'pending' || e.status === 'countered'))
+
 export function proposalsThisMonth(exchanges: Exchange[], now = Date.now()): number {
   const key = iso(now).slice(0, 7)
   return exchanges.filter((e) => e.direction === 'out' && e.createdAt.slice(0, 7) === key).length
@@ -273,7 +276,7 @@ export const useApp = create<AppState>()(
       completeOnboarding(me) {
         const now = Date.now()
         const lang = get().settings.lang
-        const neighbors = generateNeighbors(me, me.comuneId, `${me.name}:${now}`)
+        const neighbors = generateNeighbors(me, me.comuneId, `${me.name}:${now}`, 40, me.radiusKm)
         let threads: Record<string, ChatMessage[]> = {}
         const center = comuneById(me.comuneId)!
         const perfect = findMatches(me, neighbors, { center, radiusKm: me.radiusKm }).filter((m) => m.kind === 'perfect')
@@ -302,7 +305,7 @@ export const useApp = create<AppState>()(
         const me = { ...demoMe(), bio: lang === 'it'
           ? 'Faccio la fotografa e cucino pasta fresca come la mia nonna. Ho vissuto due anni a Dublino: l’inglese è la mia seconda casa. Cerco qualcuno che mi salvi dal PC e mi insegni due accordi di chitarra!'
           : 'I’m a photographer and I make fresh pasta like my grandma. I lived in Dublin for two years: English is my second home. Looking for someone to rescue me from my PC and teach me a few guitar chords!' }
-        const neighbors = generateNeighbors(me, me.comuneId, 'giulia-demo', 48)
+        const neighbors = generateNeighbors(me, me.comuneId, 'giulia-demo', 48, me.radiusKm)
         const center = comuneById(me.comuneId)!
         const ms = findMatches(me, neighbors, { center, radiusKm: me.radiusKm })
         const perfect = ms.filter((m) => m.kind === 'perfect')
@@ -418,7 +421,7 @@ export const useApp = create<AppState>()(
         me.radiusKm = clampRadius(s.plan, me.radiusKm)
         let neighbors = s.neighbors
         if (patch.comuneId && patch.comuneId !== s.me.comuneId && !neighbors.some((p) => p.comuneId === patch.comuneId)) {
-          neighbors = [...neighbors, ...generateNeighbors(me, patch.comuneId, `${me.name}:${patch.comuneId}`)]
+          neighbors = [...neighbors, ...generateNeighbors(me, patch.comuneId, `${me.name}:${patch.comuneId}`, 40, me.radiusKm)]
         }
         set({ me, neighbors })
       },
@@ -428,7 +431,7 @@ export const useApp = create<AppState>()(
         const check = canPropose({
           plan: s.plan,
           proposalsThisMonth: proposalsThisMonth(s.exchanges, now),
-          activeExchanges: s.exchanges.filter(isActive).length,
+          activeExchanges: s.exchanges.filter(countsTowardLimit).length,
         })
         if (check !== 'ok') return { result: check }
         const giveHours = input.give ? input.hours : 0

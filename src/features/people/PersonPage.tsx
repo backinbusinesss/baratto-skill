@@ -199,6 +199,19 @@ export function PersonPage() {
         </aside>
       </div>
 
+      {/* sul telefono le azioni restano a portata di pollice, sopra il menu */}
+      <div className="fixed inset-x-0 bottom-[68px] z-30 border-t border-line bg-paper/95 px-4 py-2.5 backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-lg gap-2">
+          <button className="btn btn-primary flex-1" onClick={() => openPropose()}>
+            <Send size={17} /> {tr.t('person.propose')}
+          </button>
+          <Link href={`/app/chat/?id=${p.id}`} className="btn btn-outline btn-icon !h-11 !w-11" aria-label={tr.t('person.message')}>
+            <MessageCircle size={18} />
+          </Link>
+        </div>
+      </div>
+      <div className="h-16 lg:hidden" />
+
       <ProposeSheet person={p} open={proposeOpen} onClose={() => setProposeOpen(false)} initialGet={initialGet} />
     </div>
   )

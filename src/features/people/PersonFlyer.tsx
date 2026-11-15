@@ -83,6 +83,12 @@ export function PersonFlyer({ match, className }: { match: Match; className?: st
             {tr.skill(o.id)}
           </span>
         ))}
+        {/* come sui volantini veri: le altre linguette portano il nome, da strappare */}
+        {Array.from({ length: Math.max(0, 8 - tabs.length) }, (_, i) => (
+          <span key={i} className="tear-tab blank" aria-hidden>
+            {p.first}
+          </span>
+        ))}
       </div>
     </Link>
   )

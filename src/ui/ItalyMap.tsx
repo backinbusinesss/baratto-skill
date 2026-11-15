@@ -34,6 +34,7 @@ export function ItalyMap({
   selected,
   className,
   label,
+  places,
 }: {
   dots: MapDot[]
   center?: LatLon
@@ -43,6 +44,8 @@ export function ItalyMap({
   selected?: string
   className?: string
   label: string
+  /** nomi di luogo da scrivere sulla mappa (vista di quartiere) */
+  places?: { name: string; lat: number; lon: number }[]
 }) {
   const c = center ? project(center.lon, center.lat) : null
   const r = radiusKm ? kmToUnits(radiusKm) : 0
@@ -54,7 +57,7 @@ export function ItalyMap({
     return `0 0 ${ITALY_PROJ.width} ${ITALY_PROJ.height}`
   }, [zoom, c, r])
   // dimensione dei punti proporzionata alla vista
-  const scale = zoom && r ? (r * 2.5) / 600 : 1.6
+  const scale = zoom && r ? (r * 2.5) / 260 : 1.6
   return (
     <svg viewBox={viewBox} className={cx('h-full w-full', className)} role="img" aria-label={label}>
       <defs>
@@ -75,6 +78,17 @@ export function ItalyMap({
           strokeDasharray={`${scale * 4} ${scale * 3}`}
         />
       )}
+      {places?.map((pl) => {
+        const [x, y] = project(pl.lon, pl.lat)
+        return (
+          <g key={pl.name} aria-hidden>
+            <circle cx={x} cy={y} r={scale * 1.4} fill="var(--faint)" />
+            <text x={x + scale * 3} y={y + scale * 3.5} fontSize={scale * 10} fontWeight={650} fill="var(--muted)" stroke="var(--sheet)" strokeWidth={scale * 2.5} paintOrder="stroke" style={{ fontStretch: '85%' }}>
+              {pl.name}
+            </text>
+          </g>
+        )
+      })}
       {dots.map((d) => {
         const [x, y] = project(d.lon, d.lat)
         const tone = d.tone ?? 'plain'

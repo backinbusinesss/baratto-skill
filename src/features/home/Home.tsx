@@ -52,7 +52,7 @@ export function Home() {
           <span className="num block text-[2rem] font-extrabold leading-none" style={{ fontStretch: '72%' }}>
             {kinds.perfect}
           </span>
-          <span className="mt-1 block text-[0.8rem] text-muted">{tr.t('kinds.perfect')}</span>
+          <span className="mt-1 block text-[0.8rem] text-muted">{tr.t('home.statsPerfect')}</span>
         </Link>
         <Link href="/app/scambi/" className="p-4 hover:bg-well">
           <span className="num block text-[2rem] font-extrabold leading-none" style={{ fontStretch: '72%' }}>

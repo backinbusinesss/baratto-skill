@@ -62,7 +62,7 @@ export function Onboarding() {
 
   const preview = useMemo(() => {
     if (step !== TOTAL + 1 || !draft) return null
-    const neighbors = generateNeighbors(draft, draft.comuneId, 'preview')
+    const neighbors = generateNeighbors(draft, draft.comuneId, 'preview', 40, radius)
     const ms = findMatches(draft, [...getPeople(), ...neighbors], { center: comuneById(draft.comuneId)!, radiusKm: radius })
     return { count: ms.length, perfect: ms.filter((m) => m.kind === 'perfect').length }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -199,7 +199,7 @@ export function Onboarding() {
               </motion.div>
               <h1 className="display mt-10 text-5xl">{tr.t('onboarding.finishTitle')}</h1>
               <p className="mx-auto mt-4 max-w-md text-lg text-muted">
-                {tr.t('onboarding.finishText', { count: preview.count + 40, km: radius, perfect: preview.perfect })}
+                {tr.t('onboarding.finishText', { count: preview.count, km: radius, perfect: preview.perfect })}
               </p>
             </div>
           )}

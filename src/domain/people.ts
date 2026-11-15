@@ -1,6 +1,7 @@
 import { CATEGORIES, type CategoryId } from '@/content/categories'
 import { COMUNI, type Comune, comuneById } from '@/content/comuni'
 import { SKILLS, type SkillDef } from '@/content/skills'
+import { nearestComune } from './geo'
 import { FEMALE, FOREIGN, MALE, surnamesFor } from './names'
 import { chance, hashString, int, mulberry32, pick, type Rng, sampleWeighted, weightedPick } from './rng'
 import { type Level, type Mode, type Person, type SkillLevel, availBit } from './types'
@@ -172,6 +173,7 @@ export function generateNeighbors(
   comuneId: string,
   salt: string,
   count = 40,
+  radiusKm = 12,
 ): Person[] {
   const comune = comuneById(comuneId)!
   const base = hashString(`vicinato:${comuneId}:${salt}`)
@@ -184,7 +186,14 @@ export function generateNeighbors(
     if (me.wants.length && (r < 0.3 || (r >= 0.55 && r < 0.75))) bias.teach = pick(rng, me.wants)
     if (myOffers.length && r >= 0.3 && r < 0.75) bias.learn = pick(rng, myOffers)
     if (bias.teach && bias.teach === bias.learn) delete bias.learn
-    out.push(makePerson(rng, `n${base.toString(36)}-${i}`, hashString(`${base}:${i}`), comune, bias))
+    const p = makePerson(rng, `n${base.toString(36)}-${i}`, hashString(`${base}:${i}`), comune, bias)
+    // sparsi nel raggio (metà entro un terzo, come in città), ognuno nel comune più vicino
+    const km = (rng() < 0.5 ? rng() / 3 : rng()) * radiusKm * 0.95
+    const angle = rng() * Math.PI * 2
+    p.lat = +(comune.lat + (km / 111) * Math.sin(angle)).toFixed(5)
+    p.lon = +(comune.lon + (km / (111 * Math.cos((comune.lat * Math.PI) / 180))) * Math.cos(angle)).toFixed(5)
+    p.comuneId = nearestComune(p).id
+    out.push(p)
   }
   return out
 }

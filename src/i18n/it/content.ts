@@ -66,7 +66,7 @@ export const content = {
     'In cambio vorrei imparare {want}.',
     'Da tempo sogno di imparare {want}.',
     'Cerco qualcuno che mi insegni {want}, anche da zero.',
-    'Il mio prossimo obiettivo? {want}.',
+    'Il mio prossimo obiettivo? Imparare {want}.',
     'Mi farebbe felice imparare {want}.',
   ],
   bioClose: [

@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react'
 import { comuneById } from '@/content/comuni'
 import { formatKm } from '@/domain/geo'
 import { findMatches } from '@/domain/matching'
-import { getPeople, shortName } from '@/domain/people'
+import { generateNeighbors, getPeople, shortName } from '@/domain/people'
 import { availBit } from '@/domain/types'
 import { getT, type Lang } from '@/i18n'
 import { cx } from '@/lib/cx'
@@ -29,7 +29,9 @@ export function SiteDemo({ lang }: { lang: Lang }) {
   const res = useMemo(() => {
     const c = comuneById(city)!
     const me = { offers: [{ id: teach, level: 3 as const }], wants: [learn], avail: ALL, mode: 'both' as const }
-    const ms = findMatches(me, getPeople(), { center: c, radiusKm: 30 })
+    // come nell'app: ai profili demo si aggiunge il "vicinato" generato per chi cerca
+    const people = [...getPeople(), ...generateNeighbors(me, city, 'sito', 40, 25)]
+    const ms = findMatches(me, people, { center: c, radiusKm: 30 })
     return { perfect: ms.filter((m) => m.kind === 'perfect'), teachers: ms.filter((m) => m.kind === 'theyTeach') }
   }, [teach, learn, city])
   const show = [...res.perfect, ...res.teachers].slice(0, 3)
@@ -48,7 +50,7 @@ export function SiteDemo({ lang }: { lang: Lang }) {
   )
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.1fr] [&>*]:min-w-0">
       <div className="space-y-5">
         {picker(tr.t('site.demoTeach'), TEACH, teach, setTeach, tr.skill)}
         {picker(tr.t('site.demoLearn'), LEARN, learn, setLearn, tr.skill)}

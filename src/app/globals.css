@@ -1,0 +1,448 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ------------------------------------------------------------------ colori
+   Identità di Baratto Skill: la bacheca di quartiere. Carta fredda, inchiostro blu notte,
+   cobalto da cartello stradale, giallo evidenziatore, menta per gli incroci riusciti. */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --paper: #f4f5f0;
+  --sheet: #ffffff;
+  --well: #e9ebe3;
+  --well-2: #dfe2d7;
+  --ink: #10162f;
+  --muted: #565d75;
+  --faint: #8a90a6;
+  --cobalt: #2742d9;
+  --cobalt-press: #1a2fa8;
+  --cobalt-soft: #e3e8ff;
+  --on-cobalt: #ffffff;
+  --yellow: #ffd43b;
+  --yellow-ink: #8a6a00;
+  --mint: #12a874;
+  --mint-soft: #d7f5e8;
+  --mint-ink: #0b7a54;
+  --coral: #f2545b;
+  --coral-ink: #c42e36;
+  --line: rgba(16, 22, 47, 0.11);
+  --line-strong: rgba(16, 22, 47, 0.24);
+  --shadow-paper: 0 1px 0 rgba(16, 22, 47, 0.06), 0 10px 24px -14px rgba(16, 22, 47, 0.35);
+  --grain-opacity: 0.35;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0d1124;
+  --sheet: #161b33;
+  --well: #1e2442;
+  --well-2: #262d52;
+  --ink: #eef0fa;
+  --muted: #a3aac8;
+  --faint: #737a9a;
+  --cobalt: #6f86ff;
+  --cobalt-press: #4a63e6;
+  --cobalt-soft: #222c63;
+  --on-cobalt: #0d1124;
+  --yellow: #ffd43b;
+  --yellow-ink: #ffd43b;
+  --mint: #3dd69b;
+  --mint-soft: #133b30;
+  --mint-ink: #5fe3b0;
+  --coral: #ff6b71;
+  --coral-ink: #ff8a8f;
+  --line: rgba(238, 240, 250, 0.1);
+  --line-strong: rgba(238, 240, 250, 0.22);
+  --shadow-paper: 0 1px 0 rgba(0, 0, 0, 0.3), 0 14px 30px -16px rgba(0, 0, 0, 0.8);
+  --grain-opacity: 0.12;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-sheet: var(--sheet);
+  --color-well: var(--well);
+  --color-well-2: var(--well-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-cobalt: var(--cobalt);
+  --color-cobalt-press: var(--cobalt-press);
+  --color-cobalt-soft: var(--cobalt-soft);
+  --color-on-cobalt: var(--on-cobalt);
+  --color-yellow: var(--yellow);
+  --color-yellow-ink: var(--yellow-ink);
+  --color-mint: var(--mint);
+  --color-mint-soft: var(--mint-soft);
+  --color-mint-ink: var(--mint-ink);
+  --color-coral: var(--coral);
+  --color-coral-ink: var(--coral-ink);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --shadow-paper: var(--shadow-paper);
+}
+
+/* ------------------------------------------------------------------ base */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* grana della carta, quasi invisibile */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.06 0 0 0 0 0.08 0 0 0 0 0.18 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* titoli da manifesto: condensati, pesanti, interlinea stretta */
+.display {
+  font-stretch: 72%;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 0.92;
+}
+h1,
+h2,
+h3 {
+  font-stretch: 82%;
+  font-weight: 760;
+  letter-spacing: -0.012em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.wide {
+  font-stretch: 118%;
+}
+.hand {
+  font-family: var(--font-hand);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* evidenziatore giallo dietro una parola o un'etichetta */
+.marker {
+  background: linear-gradient(transparent 12%, var(--yellow) 12%, var(--yellow) 88%, transparent 88%);
+  color: #10162f;
+  padding: 0 0.2em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+:focus-visible {
+  outline: 3px solid var(--cobalt);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--yellow);
+  color: #10162f;
+}
+
+/* ------------------------------------------------------------------ pulsanti */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.15rem;
+  border-radius: 999px;
+  font-weight: 650;
+  font-stretch: 96%;
+  white-space: nowrap;
+  transition:
+    transform 0.12s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s;
+  user-select: none;
+  touch-action: manipulation;
+}
+.btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.985);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--cobalt);
+  color: var(--on-cobalt);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--cobalt-press);
+}
+:root[data-theme="dark"] .btn-primary:hover:not(:disabled) {
+  background: #8a9cff;
+}
+.btn-ink {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn-yellow {
+  background: var(--yellow);
+  color: #10162f;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.14);
+}
+.btn-mint {
+  background: var(--mint);
+  color: #fff;
+}
+:root[data-theme="dark"] .btn-mint {
+  color: #0d1124;
+}
+.btn-outline {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+}
+.btn-outline:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+}
+.btn-ghost:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--well);
+}
+.btn-danger {
+  background: transparent;
+  color: var(--coral-ink);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--coral) 50%, transparent);
+}
+.btn-sm {
+  min-height: 2.25rem;
+  padding: 0 0.9rem;
+  font-size: 0.875rem;
+}
+.btn-lg {
+  min-height: 3.25rem;
+  padding: 0 1.6rem;
+  font-size: 1.05rem;
+}
+.btn-icon {
+  width: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0;
+}
+
+/* ------------------------------------------------------------------ superfici */
+.sheet {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.paper {
+  background: var(--sheet);
+  box-shadow: var(--shadow-paper);
+  border-radius: 4px;
+}
+
+/* il volantino con le linguette da strappare */
+.flyer {
+  position: relative;
+  background: var(--sheet);
+  border-radius: 3px 3px 0 0;
+  box-shadow: var(--shadow-paper);
+}
+.flyer-pin {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff8 0 18%, transparent 20%), var(--pin, var(--coral));
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+.tabs-row {
+  display: flex;
+  border-top: 1.5px dashed var(--line-strong);
+  background: var(--sheet);
+  border-radius: 0 0 3px 3px;
+  box-shadow: var(--shadow-paper);
+  overflow: hidden;
+}
+.tear-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0.55rem 0.25rem 0.6rem;
+  border-left: 1.5px dashed var(--line-strong);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-stretch: 85%;
+  line-height: 1.1;
+  max-height: 7.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 0.2s;
+}
+.tear-tab:last-child {
+  border-left: none;
+}
+.tear-tab.hit {
+  background: var(--mint-soft);
+  color: var(--mint-ink);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .tear-tab:hover {
+    transform: rotate(180deg) translateY(-5px) rotate(-3deg);
+  }
+}
+
+/* il biglietto di scambio: due metà unite da una perforazione */
+.ticket {
+  --notch: 11px;
+  position: relative;
+  background: var(--sheet);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at var(--cut, 50%) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at var(--cut, 50%) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at var(--cut, 50%) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at var(--cut, 50%) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+}
+.perforation {
+  border-left: 2px dashed var(--line-strong);
+}
+
+/* timbro circolare dei badge */
+.stamp {
+  border-radius: 50%;
+  border: 2.5px solid currentColor;
+  box-shadow:
+    inset 0 0 0 3px var(--sheet),
+    inset 0 0 0 4.5px currentColor;
+}
+
+/* ------------------------------------------------------------------ moduli */
+.field {
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  background: var(--sheet);
+  border: 1.5px solid var(--line-strong);
+  color: var(--ink);
+  transition: border-color 0.15s;
+}
+.field::placeholder {
+  color: var(--faint);
+}
+.field:focus {
+  outline: none;
+  border-color: var(--cobalt);
+}
+textarea.field {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2rem;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 560;
+  background: var(--well);
+  color: var(--ink);
+  border: 1.5px solid transparent;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+button.chip:hover {
+  border-color: var(--line-strong);
+}
+.chip[aria-pressed="true"],
+.chip.on {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+input[type="range"] {
+  accent-color: var(--cobalt);
+}
+
+/* scrollbar orizzontali senza barra */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.safe-bottom {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes typing {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+.typing-dot {
+  animation: typing 1.2s infinite ease-in-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

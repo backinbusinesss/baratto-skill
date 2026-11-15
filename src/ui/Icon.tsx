@@ -1,0 +1,80 @@
+import {
+  Bike,
+  Brain,
+  Briefcase,
+  ChefHat,
+  Crown,
+  Flag,
+  Flower,
+  GraduationCap,
+  Hammer,
+  HandHeart,
+  Handshake,
+  HeartHandshake,
+  Hourglass,
+  House,
+  IdCard,
+  Landmark,
+  Languages,
+  Laptop,
+  type LucideIcon,
+  MessageSquareHeart,
+  MessagesSquare,
+  Moon,
+  Music,
+  Palette,
+  Repeat,
+  Scissors,
+  Shapes,
+  Sprout,
+  Star,
+  Sunrise,
+  Triangle,
+  Wrench,
+} from 'lucide-react'
+import type { CategoryId } from '@/content/categories'
+import { categoryById } from '@/content/categories'
+
+/** Icone usate da categorie e badge, indicizzate per nome (i nomi sono nei file di contenuto). */
+const ICONS: Record<string, LucideIcon> = {
+  languages: Languages,
+  laptop: Laptop,
+  music: Music,
+  bike: Bike,
+  'chef-hat': ChefHat,
+  hammer: Hammer,
+  'graduation-cap': GraduationCap,
+  palette: Palette,
+  flower: Flower,
+  sprout: Sprout,
+  briefcase: Briefcase,
+  scissors: Scissors,
+  'heart-handshake': HeartHandshake,
+  wrench: Wrench,
+  flag: Flag,
+  'id-card': IdCard,
+  handshake: Handshake,
+  repeat: Repeat,
+  landmark: Landmark,
+  'hand-heart': HandHeart,
+  hourglass: Hourglass,
+  brain: Brain,
+  shapes: Shapes,
+  star: Star,
+  'message-square-heart': MessageSquareHeart,
+  house: House,
+  triangle: Triangle,
+  sunrise: Sunrise,
+  moon: Moon,
+  'messages-square': MessagesSquare,
+  crown: Crown,
+}
+
+export function NamedIcon({ name, size = 18, className }: { name: string; size?: number; className?: string }) {
+  const I = ICONS[name] ?? Shapes
+  return <I size={size} className={className} aria-hidden />
+}
+
+export function CategoryIcon({ id, size = 18, className }: { id: CategoryId; size?: number; className?: string }) {
+  return <NamedIcon name={categoryById(id).icon} size={size} className={className} />
+}

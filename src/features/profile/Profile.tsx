@@ -4,7 +4,6 @@ import { Crown, Eye, Lock, LogOut, Mail, Monitor, Moon, Pencil, RotateCcw, Sun }
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { comuneById } from '@/content/comuni'
-import { BADGES, badgeProgress } from '@/domain/badges'
 import { haversineKm } from '@/domain/geo'
 import { balance } from '@/domain/timebank'
 import { hashString, mulberry32 } from '@/domain/rng'
@@ -19,7 +18,6 @@ import { useT } from '@/store/hooks'
 import { myRating, myStats, profileCompleteness } from '@/store/selectors'
 import { AvailabilityGrid } from '@/ui/AvailabilityGrid'
 import { Avatar } from '@/ui/Avatar'
-import { BadgeStamp } from '@/ui/BadgeStamp'
 import { MemberCard } from '@/ui/MemberCard'
 import { Empty, Section, SkillChip, Stars } from '@/ui/bits'
 import { ComuneSearch } from '@/ui/ComuneSearch'
@@ -27,6 +25,7 @@ import { Sheet } from '@/ui/Sheet'
 import { SkillPicker } from '@/ui/SkillPicker'
 import { toast } from '@/ui/Toaster'
 import { usePeople } from '../people/useMatches'
+import { BadgeCollection } from './BadgeCollection'
 
 export function Profile() {
   const tr = useT()
@@ -39,7 +38,6 @@ export function Profile() {
   const [editing, setEditing] = useState(false)
   const city = comuneById(me.comuneId)!
   const received = state.exchanges.filter((e) => e.theirReview)
-  const earnedCount = BADGES.filter((b) => badgeProgress(b, stats).earned).length
   const people = usePeople()
 
   // visite della settimana (demo): vicini scelti in modo stabile
@@ -106,15 +104,8 @@ export function Profile() {
         </div>
       </Section>
 
-      <Section title={tr.t('profile.badges')} action={<span className="text-sm text-muted">{tr.t('profile.badgesProgress', { earned: earnedCount, total: BADGES.length })}</span>}>
-        <div className="grid grid-cols-3 justify-items-center gap-y-6 sm:grid-cols-5 lg:grid-cols-7">
-          {[...BADGES]
-            .sort((a, b) => Number(badgeProgress(b, stats).earned) - Number(badgeProgress(a, stats).earned))
-            .map((b) => {
-              const pr = badgeProgress(b, stats)
-              return <BadgeStamp key={b.id} badge={b} earned={pr.earned} pct={pr.pct} />
-            })}
-        </div>
+      <Section title={tr.t('profile.badges')}>
+        <BadgeCollection stats={stats} />
       </Section>
 
       <div className="grid gap-x-10 lg:grid-cols-2">

@@ -10,6 +10,7 @@ import { PaymentsProvider } from '@/providers/payments'
 import { VideoProvider } from '@/providers/video'
 import { useApp } from '@/store/app'
 import { useHydrated } from '@/store/hooks'
+import { BadgeWatcher } from './BadgeWatcher'
 import { Celebration } from './Celebration'
 import { BottomNav, SideNav, TopBar } from './Nav'
 import { Simulator } from './Simulator'
@@ -49,6 +50,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
               <BottomNav />
               <Simulator />
+              <BadgeWatcher />
             </div>
           ) : (
             <Onboarding />

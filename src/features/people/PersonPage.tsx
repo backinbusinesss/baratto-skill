@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { comuneById } from '@/content/comuni'
-import { BADGES, badgeProgress, demoStats } from '@/domain/badges'
+import { demoStats, earnedBadges, topEarned } from '@/domain/badges'
+import { skillById } from '@/content/skills'
 import { formatKm, haversineKm } from '@/domain/geo'
 import { scoreMatch } from '@/domain/matching'
 import { fullName, shortName } from '@/domain/people'
@@ -43,7 +44,7 @@ export function PersonPage() {
       match: scoreMatch(me, p, dist, me.radiusKm),
       bio: bioFor(p, tr),
       reviews: reviewsFor(p, tr, 5),
-      stats: demoStats(p),
+      stats: demoStats(p, (id) => skillById(id)?.cat),
     }
   }, [p, me, tr])
 
@@ -51,7 +52,8 @@ export function PersonPage() {
   const { match, bio, reviews, stats } = data
   const wanted = new Set(me.wants)
   const myOffers = new Set(me.offers.map((o) => o.id))
-  const earned = BADGES.filter((b) => badgeProgress(b, stats).earned)
+  const earned = topEarned(stats).slice(0, 12)
+  const earnedTotal = earnedBadges(stats).length
 
   const openPropose = (get?: string) => {
     setInitialGet(get)
@@ -185,7 +187,9 @@ export function PersonPage() {
           </div>
           {earned.length > 0 && (
             <div className="mt-5">
-              <h2 className="text-lg">{tr.t('person.badges')}</h2>
+              <h2 className="flex items-baseline gap-2 text-lg">
+                {tr.t('person.badges')} <span className="num text-sm font-semibold text-muted">{earnedTotal}</span>
+              </h2>
               <div className="mt-3 flex flex-wrap gap-3">
                 {earned.map((b) => (
                   <BadgeStamp key={b.id} badge={b} earned size="sm" />

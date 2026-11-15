@@ -1,33 +1,66 @@
+import type { CategoryId } from '@/content/categories'
+import { comuneById } from '@/content/comuni'
 import { skillById } from '@/content/skills'
 import { EMPTY_STATS, type Stats } from '@/domain/badges'
+import { haversineKm } from '@/domain/geo'
 import { isPremium } from '@/domain/plans'
 import { slotOf } from '@/domain/slots'
+import { countBits } from '@/domain/types'
 import type { AppData, Exchange } from './app'
-import { isActive } from './app'
+import { findPerson, isActive } from './app'
 
+/** Le statistiche dell'utente, da cui nascono i badge. */
 export function myStats(s: AppData): Stats {
   const done = s.exchanges.filter((e) => e.status === 'completed')
   const taught = new Set(done.map((e) => e.give).filter(Boolean) as string[])
-  const cats = new Set([...taught].map((id) => skillById(id)?.cat))
-  const langs = [...taught].filter((id) => skillById(id)?.cat === 'languages')
-  const slotIdx = done.map((e) => (e.slot ? slotOf(e.slot).slot : -1))
+  const learned = new Set(done.map((e) => e.get).filter(Boolean) as string[])
+  const catTaught: Partial<Record<CategoryId, number>> = {}
+  const catLearned: Partial<Record<CategoryId, number>> = {}
+  for (const e of done) {
+    const ct = e.give ? skillById(e.give)?.cat : undefined
+    const cl = e.get ? skillById(e.get)?.cat : undefined
+    if (ct) catTaught[ct] = (catTaught[ct] ?? 0) + 1
+    if (cl) catLearned[cl] = (catLearned[cl] ?? 0) + 1
+  }
+  const home = s.me ? comuneById(s.me.comuneId) : undefined
+  const people = done.map((e) => findPerson(s.neighbors, e.personId)).filter((p) => !!p)
+  const dist = people.map((p) => (home ? haversineKm(home, p) : 0))
+  const slots = done.filter((e) => e.slot).map((e) => slotOf(e.slot!))
+  const lang = (ids: Set<string>) => [...ids].filter((id) => skillById(id)?.cat === 'languages').length
   return {
     ...EMPTY_STATS,
     completed: done.length,
     hoursGiven: done.reduce((n, e) => n + e.giveHours, 0),
     hoursReceived: done.reduce((n, e) => n + e.getHours, 0),
     skillsTaught: taught.size,
-    categoriesTaught: cats.size,
-    languagesTaught: langs.length,
+    skillsLearned: learned.size,
+    categoriesTaught: Object.keys(catTaught).length,
+    categoriesLearned: Object.keys(catLearned).length,
+    languagesTaught: lang(taught),
+    languagesLearned: lang(learned),
     reviewsGiven: done.filter((e) => e.myReview).length,
     fiveStars: done.filter((e) => e.theirReview?.stars === 5).length,
     peopleMet: new Set(done.map((e) => e.personId)).size,
-    profileComplete: profileCompleteness(s) >= 1 ? 1 : 0,
-    morning: slotIdx.filter((x) => x === 0).length,
-    evening: slotIdx.filter((x) => x === 2).length,
-    premium: isPremium(s.plan) ? 1 : 0,
+    citiesMet: new Set(people.map((p) => p.comuneId)).size,
+    online: done.filter((e) => e.mode === 'online').length,
+    live: done.filter((e) => e.mode === 'live').length,
+    weekend: slots.filter((x) => x.day >= 5).length,
+    morning: slots.filter((x) => x.slot === 0).length,
+    evening: slots.filter((x) => x.slot === 2).length,
+    gifts: done.filter((e) => e.give && !e.get).length,
+    paidWithHours: done.filter((e) => e.get && !e.give).length,
+    far: dist.filter((d) => d > 10).length,
+    near: dist.filter((d) => d < 1).length,
     messages: s.messagesSent,
+    saved: s.saved.length,
+    countersAccepted: done.filter((e) => e.direction === 'out' && e.outcome === 'counter').length,
+    freeSlots: s.me ? countBits(s.me.avail) : 0,
+    profileComplete: profileCompleteness(s) >= 1 ? 1 : 0,
+    bio: s.me && s.me.bio.trim().length >= 40 ? 1 : 0,
+    premium: isPremium(s.plan) ? 1 : 0,
     pioneer: 1,
+    catTaught,
+    catLearned,
   }
 }
 

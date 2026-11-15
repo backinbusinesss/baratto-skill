@@ -1,5 +1,7 @@
 import { comuneById } from '@/content/comuni'
-import { BADGES, badgeProgress, EMPTY_STATS, earnedBadges } from '@/domain/badges'
+import { BADGES, badgeProgress, EMPTY_STATS, earnedBadges, FAMILIES, newlyEarned, topEarned } from '@/domain/badges'
+import { getT } from '@/i18n'
+import { badgeDesc, badgeName } from '@/i18n/badges'
 import { haversineKm } from '@/domain/geo'
 import { findMatches, modesCompatible, scoreMatch, type Seeker } from '@/domain/matching'
 import { generateNeighbors, getPeople } from '@/domain/people'
@@ -155,15 +157,37 @@ describe('piani', () => {
 })
 
 describe('badge', () => {
-  it('si sbloccano alla soglia', () => {
-    const s = { ...EMPTY_STATS, completed: 5, hoursGiven: 12 }
-    const earned = earnedBadges(s)
-    expect(earned).toContain('first-exchange')
-    expect(earned).toContain('regular')
-    expect(earned).toContain('golden-hands')
-    expect(earned).not.toContain('pillar')
-    const pillar = BADGES.find((b) => b.id === 'pillar')!
-    expect(badgeProgress(pillar, s)).toEqual({ value: 5, pct: 0.25, earned: false })
+  it('sono più di 150, con id unici, e si sbloccano alla soglia', () => {
+    expect(BADGES.length).toBeGreaterThan(150)
     expect(new Set(BADGES.map((b) => b.id)).size).toBe(BADGES.length)
+    const s = { ...EMPTY_STATS, completed: 5, hoursGiven: 12, catTaught: { cooking: 1 } }
+    const earned = earnedBadges(s)
+    expect(earned).toEqual(expect.arrayContaining(['exchanges-1', 'exchanges-2', 'givers-1', 'givers-2', 'teach-cooking-1']))
+    expect(earned).not.toContain('exchanges-3')
+    expect(earned).not.toContain('teach-cooking-2')
+    const third = BADGES.find((b) => b.id === 'exchanges-3')!
+    expect(badgeProgress(third, s)).toEqual({ value: 5, pct: 5 / 15, earned: false })
+  })
+
+  it('i livelli di ogni famiglia hanno soglie crescenti', () => {
+    for (const f of FAMILIES) for (let i = 1; i < f.targets.length; i++) expect(f.targets[i], f.key).toBeGreaterThan(f.targets[i - 1])
+  })
+
+  it('segnala i badge appena ottenuti e il più alto per famiglia', () => {
+    const before = { ...EMPTY_STATS, completed: 4 }
+    const after = { ...EMPTY_STATS, completed: 5 }
+    expect(newlyEarned(before, after).map((b) => b.id)).toEqual(['exchanges-2'])
+    expect(topEarned(after).find((b) => b.key === 'exchanges')?.tier).toBe(2)
+  })
+
+  it('ogni badge ha nome e descrizione in entrambe le lingue, senza segnaposto rimasti', () => {
+    for (const lang of ['it', 'en'] as const) {
+      const tr = getT(lang)
+      for (const b of BADGES) {
+        expect(badgeName(tr, b), b.id).not.toMatch(/\{|undefined/)
+        expect(badgeDesc(tr, b), b.id).not.toMatch(/\{|undefined/)
+      }
+    }
+    expect(badgeName(getT('it'), BADGES.find((b) => b.id === 'teach-cooking-2')!)).toBe('Cucina · Maestro · Argento')
   })
 })

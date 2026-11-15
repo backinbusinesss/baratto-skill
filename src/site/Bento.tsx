@@ -1,5 +1,6 @@
 import { CalendarPlus, Check, Crown, Hourglass, MapPin } from 'lucide-react'
-import { BADGES } from '@/domain/badges'
+import { BADGES, badgeById } from '@/domain/badges'
+import { badgeName } from '@/i18n/badges'
 import { getT, type Lang } from '@/i18n'
 import { Avatar } from '@/ui/Avatar'
 import { NamedIcon } from '@/ui/Icon'
@@ -135,14 +136,14 @@ export function Bento({ lang }: { lang: Lang }) {
 
       {/* badge */}
       <RevealItem className="bento md:col-span-3">
-        <BentoHead title={b.badgesTitle} text={b.badgesText} />
+        <BentoHead title={tr.t('site.bento.badgesTitle', { count: BADGES.length })} text={b.badgesText} />
         <div className="mt-5 flex flex-wrap justify-center gap-3">
-          {BADGES.slice(2, 8).map((b, i) => (
+          {['exchanges-3', 'givers-2', 'polyglot-1', 'teach-cooking-1', 'stars-4', 'triads-1', 'early-2', 'pioneer'].map((id) => badgeById(id)!).map((b, i) => (
             <span
               key={b.id}
               className="stamp grid h-16 w-16 place-items-center"
               style={{ color: b.color, transform: `rotate(${(i % 3) * 6 - 6}deg)`, background: `color-mix(in srgb, ${b.color} 12%, var(--sheet))` }}
-              title={tr.m.badges[b.id][0]}
+              title={badgeName(tr, b)}
             >
               <NamedIcon name={b.icon} size={24} />
             </span>

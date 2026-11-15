@@ -11,7 +11,7 @@ import { haversineKm } from '@/domain/geo'
 import { cx } from '@/lib/cx'
 import { useApp } from '@/store/app'
 import { useT } from '@/store/hooks'
-import { CategoryIcon } from '@/ui/Icon'
+import { CategoryIcon, SkillIcon } from '@/ui/Icon'
 import { usePeople } from '../people/useMatches'
 
 /** Quante persone nel raggio offrono / cercano ciascuna competenza. */
@@ -93,9 +93,12 @@ export function Explore() {
               return (
                 <li key={s.id}>
                   <Link href={`/app/competenza/?id=${s.id}`} className="group flex items-center justify-between gap-3 border-b border-line py-2.5 hover:border-ink">
-                    <span className={cx('min-w-0 truncate font-medium', mine.has(s.id) && 'font-bold')}>
-                      {mine.has(s.id) && <span className="mr-1.5 inline-block h-2 w-2 rounded-full" style={{ background: categoryById(s.cat).color }} />}
-                      {tr.skill(s.id)}
+                    <span className={cx('flex min-w-0 items-center gap-2.5 font-medium', mine.has(s.id) && 'font-bold')}>
+                      <span className="shrink-0" style={{ color: categoryById(s.cat).color }}>
+                        <SkillIcon id={s.id} size={17} />
+                      </span>
+                      <span className="truncate">{tr.skill(s.id)}</span>
+                      {mine.has(s.id) && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-cobalt" />}
                     </span>
                     <span className={cx('num shrink-0 text-sm', n ? 'text-muted' : 'text-faint')}>{n}</span>
                   </Link>

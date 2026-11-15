@@ -7,6 +7,7 @@ import { cx } from '@/lib/cx'
 import type { Exchange, ExchangeStatus } from '@/store/app'
 import { useT } from '@/store/hooks'
 import { Avatar } from '@/ui/Avatar'
+import { SkillIcon } from '@/ui/Icon'
 import { usePerson } from '../people/useMatches'
 
 export const STATUS_STYLE: Record<ExchangeStatus, string> = {
@@ -53,7 +54,10 @@ export function ExchangeTicket({ ex, actions }: { ex: Exchange; actions?: React.
               <dt className="w-[4.6rem] shrink-0 text-muted">{tr.t('exchanges.youGive')}</dt>
               <dd className="min-w-0 truncate font-semibold">
                 {ex.give ? (
-                  `${tr.skill(ex.give)} · ${tr.t('common.hoursShort', { count: tr.num(ex.giveHours) })}`
+                  <span className="inline-flex items-center gap-1.5">
+                    <SkillIcon id={ex.give} size={14} className="shrink-0 text-cobalt" />
+                    {`${tr.skill(ex.give)} · ${tr.t('common.hoursShort', { count: tr.num(ex.giveHours) })}`}
+                  </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 text-muted">
                     <Hourglass size={13} /> {tr.t('exchanges.hoursOnly')}
@@ -65,7 +69,10 @@ export function ExchangeTicket({ ex, actions }: { ex: Exchange; actions?: React.
               <dt className="w-[4.6rem] shrink-0 text-muted">{tr.t('exchanges.youGet')}</dt>
               <dd className="min-w-0 truncate font-semibold">
                 {ex.get ? (
-                  `${tr.skill(ex.get)} · ${tr.t('common.hoursShort', { count: tr.num(ex.getHours) })}`
+                  <span className="inline-flex items-center gap-1.5">
+                    <SkillIcon id={ex.get} size={14} className="shrink-0 text-mint-ink" />
+                    {`${tr.skill(ex.get)} · ${tr.t('common.hoursShort', { count: tr.num(ex.getHours) })}`}
+                  </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 text-muted">
                     <Gift size={13} /> {tr.t('exchanges.gift')}

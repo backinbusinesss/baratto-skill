@@ -8,7 +8,7 @@ import { skillById } from '@/content/skills'
 import { useApp } from '@/store/app'
 import { useT } from '@/store/hooks'
 import { Empty, Section } from '@/ui/bits'
-import { CategoryIcon } from '@/ui/Icon'
+import { CategoryIcon, SkillBadgeIcon } from '@/ui/Icon'
 import { toast } from '@/ui/Toaster'
 import { PersonFlyer } from '../people/PersonFlyer'
 import { useMatches } from '../people/useMatches'
@@ -36,7 +36,10 @@ export function SkillDetail() {
           <span className="inline-flex items-center gap-1.5 text-sm font-semibold" style={{ color: c.color }}>
             <CategoryIcon id={s.cat} size={16} /> {tr.cat(s.cat)}
           </span>
-          <h1 className="display mt-1 text-[3rem] sm:text-[4rem]">{tr.skill(id)}</h1>
+          <div className="mt-2 flex items-center gap-4">
+            <SkillBadgeIcon id={id} size={72} />
+            <h1 className="display text-[3rem] sm:text-[4rem]">{tr.skill(id)}</h1>
+          </div>
           <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-muted">
             <span className="inline-flex items-center gap-1.5"><GraduationCap size={16} /> {tr.t('explore.offeredNear', { count: teachers.length })}</span>
             <span className="inline-flex items-center gap-1.5"><Users size={16} /> {tr.t('explore.wantedNear', { count: learners.length })}</span>

@@ -10,7 +10,8 @@
     "test": "vitest run",
     "assets": "tsx scripts/build-assets.ts",
     "typecheck": "tsc --noEmit",
-    "serve": "node scripts/serve-out.mjs"
+    "serve": "node scripts/serve-out.mjs",
+    "icons": "tsx scripts/gen-icons.ts"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
@@ -39,6 +40,7 @@
     "@types/topojson-specification": "^1.0.5",
     "@vitejs/plugin-react": "^6.3.0",
     "d3-geo": "^3.1.2",
+    "flag-icons": "^7.6.0",
     "jsdom": "^31.0.1",
     "postcss": "^8.5.33",
     "sharp": "^0.35.5",

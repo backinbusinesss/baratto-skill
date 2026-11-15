@@ -14,6 +14,7 @@ import { skillPhrase } from '@/i18n/compose'
 import { cx } from '@/lib/cx'
 import { proposalsThisMonth, type ProposeResult, useApp } from '@/store/app'
 import { useT } from '@/store/hooks'
+import { SkillIcon } from '@/ui/Icon'
 import { Sheet } from '@/ui/Sheet'
 import { toast } from '@/ui/Toaster'
 
@@ -145,6 +146,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
           <div className="flex flex-wrap gap-1.5">
             {myOffers.map((o) => (
               <button key={o.id} type="button" className={cx('chip', give === o.id && 'on', give !== o.id && theyWant.has(o.id) && '!bg-mint-soft !text-mint-ink')} aria-pressed={give === o.id} onClick={() => setGive(o.id)}>
+                <SkillIcon id={o.id} size={15} />
                 {tr.skill(o.id)}
               </button>
             ))}
@@ -158,6 +160,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
           <div className="flex flex-wrap gap-1.5">
             {theirOffers.map((o) => (
               <button key={o.id} type="button" className={cx('chip', get === o.id && 'on', get !== o.id && iWant.has(o.id) && '!bg-mint-soft !text-mint-ink')} aria-pressed={get === o.id} onClick={() => setGet(o.id)}>
+                <SkillIcon id={o.id} size={15} />
                 {tr.skill(o.id)}
               </button>
             ))}

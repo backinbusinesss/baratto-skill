@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, Plus, Search, X } from 'lucide-react'
+import { Check, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { CATEGORIES, type CategoryId, categoryById } from '@/content/categories'
 import { normalize } from '@/content/comuni'
@@ -9,7 +9,7 @@ import { POPULAR } from '@/domain/people'
 import { LEVELS, type Level, type SkillLevel } from '@/domain/types'
 import { cx } from '@/lib/cx'
 import { useT } from '@/store/hooks'
-import { CategoryIcon } from './Icon'
+import { CategoryIcon, SkillBadgeIcon, SkillIcon } from './Icon'
 import { LevelPips } from './bits'
 
 /**
@@ -52,10 +52,9 @@ export function SkillPicker({
       {value.length > 0 && (
         <ul className="mb-4 space-y-2">
           {value.map((v) => {
-            const s = SKILLS.find((x) => x.id === v.id)
             return (
               <li key={v.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl bg-sheet px-3 py-2 shadow-paper">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ background: s ? categoryById(s.cat).color : undefined }} />
+                <SkillBadgeIcon id={v.id} size={34} />
                 <span className="min-w-0 flex-1 font-semibold">{tr.skill(v.id)}</span>
                 {withLevel && (
                   <span className="flex gap-1" role="radiogroup" aria-label={tr.t('people.minLevel')}>
@@ -130,7 +129,7 @@ export function SkillPicker({
               onClick={() => toggle(s.id)}
               className={cx('chip', on && 'on', blocked && 'opacity-40 line-through')}
             >
-              {on ? <Check size={14} /> : <Plus size={14} className="text-faint" />}
+              {on ? <Check size={14} /> : <span style={{ color: categoryById(s.cat).color }}><SkillIcon id={s.id} size={15} /></span>}
               {tr.skill(s.id)}
             </button>
           )

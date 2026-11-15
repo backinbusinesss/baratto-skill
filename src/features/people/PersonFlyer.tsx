@@ -10,6 +10,7 @@ import { cx } from '@/lib/cx'
 import { useT } from '@/store/hooks'
 import { Avatar } from '@/ui/Avatar'
 import { PremiumTag, VerifiedMark } from '@/ui/bits'
+import { SkillBadgeIcon } from '@/ui/Icon'
 
 const PINS = ['var(--coral)', 'var(--cobalt)', 'var(--mint)', 'var(--yellow)']
 
@@ -65,7 +66,10 @@ export function PersonFlyer({ match, className }: { match: Match; className?: st
           </div>
           {p.premium && <PremiumTag />}
         </div>
-        <p className="hand mt-3 text-[1.65rem] leading-[1.05] text-ink">{tr.skill(headline)}!</p>
+        <div className="mt-3 flex items-center gap-2.5">
+          <SkillBadgeIcon id={headline} size={38} />
+          <p className="hand min-w-0 text-[1.65rem] leading-[1.05] text-ink">{tr.skill(headline)}!</p>
+        </div>
         {hint && (
           <p
             className={cx(

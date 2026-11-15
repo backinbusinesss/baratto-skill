@@ -7,6 +7,7 @@ import { skillById } from '@/content/skills'
 import type { Level } from '@/domain/types'
 import { cx } from '@/lib/cx'
 import { useT } from '@/store/hooks'
+import { SkillIcon } from './Icon'
 
 /** Quattro tacche per il livello. */
 export function LevelPips({ level, className }: { level: Level; className?: string }) {
@@ -44,7 +45,9 @@ export function SkillChip({
   const color = s ? categoryById(s.cat).color : 'var(--faint)'
   const content = (
     <>
-      <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: color }} aria-hidden />
+      <span className="shrink-0" style={{ color }}>
+        <SkillIcon id={id} size={15} />
+      </span>
       <span className="truncate">{tr.skill(id)}</span>
       {level && <LevelPips level={level} className="text-muted" />}
     </>

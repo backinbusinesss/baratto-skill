@@ -1,6 +1,7 @@
 import { Check, Search, Sparkles } from 'lucide-react'
 import { getT, type Lang } from '@/i18n'
 import { Avatar } from '@/ui/Avatar'
+import { SkillIcon } from '@/ui/Icon'
 
 /**
  * "Come funziona" come mazzo di carte: ogni passo resta appiccicato un po' più in basso
@@ -13,7 +14,7 @@ export function StoryStack({ lang }: { lang: Lang }) {
     <div key="0" className="flex flex-wrap gap-2">
       {['english', 'fresh-pasta', 'photography', 'canva', 'guitar', 'excel'].map((id, i) => (
         <span key={id} className={i < 3 ? 'chip on !min-h-10 !px-4' : 'chip !min-h-10 !px-4'}>
-          {i < 3 && <Check size={14} />}
+          {i < 3 ? <Check size={14} /> : <SkillIcon id={id} size={15} />}
           {tr.skill(id)}
         </span>
       ))}

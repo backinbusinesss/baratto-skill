@@ -32,17 +32,17 @@ export const CATEGORIES: CategoryDef[] = [
   { id: 'languages', color: '#E5533B', icon: 'languages', online: true },
   { id: 'tech', color: '#3A6FD8', icon: 'laptop', online: true },
   { id: 'music', color: '#8E5CC3', icon: 'music', online: true },
-  { id: 'sport', color: '#1E9A6A', icon: 'bike', online: false },
+  { id: 'sport', color: '#1E9A6A', icon: 'trophy', online: false },
   { id: 'cooking', color: '#E08A1E', icon: 'chef-hat', online: false },
   { id: 'home', color: '#B4683C', icon: 'hammer', online: false },
   { id: 'study', color: '#2B7A9E', icon: 'graduation-cap', online: true },
   { id: 'art', color: '#D24D7E', icon: 'palette', online: false },
-  { id: 'wellness', color: '#3E9C8F', icon: 'flower', online: true },
+  { id: 'wellness', color: '#3E9C8F', icon: 'x-lotus', online: true },
   { id: 'garden', color: '#4F8A2B', icon: 'sprout', online: false },
-  { id: 'career', color: '#4B5BA6', icon: 'briefcase', online: true },
+  { id: 'career', color: '#4B5BA6', icon: 'briefcase-business', online: true },
   { id: 'fashion', color: '#C2477A', icon: 'scissors', online: false },
-  { id: 'family', color: '#D9A21B', icon: 'heart-handshake', online: false },
-  { id: 'motors', color: '#5B6470', icon: 'wrench', online: false },
+  { id: 'family', color: '#D9A21B', icon: 'house-heart', online: false },
+  { id: 'motors', color: '#5B6470', icon: 'car', online: false },
 ]
 
 const BY_ID = new Map(CATEGORIES.map((c) => [c.id, c]))

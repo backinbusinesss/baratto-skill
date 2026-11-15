@@ -1,4 +1,5 @@
 import { CATEGORY_IDS, type CategoryId, categoryById } from '@/content/categories'
+import { CATEGORY_LEARN_ICONS } from '@/content/skillIcons'
 
 /**
  * Badge di Baratto Skill. Sono di tre tipi:
@@ -99,31 +100,31 @@ interface Family {
 /** Le famiglie a livelli: una soglia per livello, dal Bronzo in su. */
 export const FAMILIES: Family[] = [
   { key: 'exchanges', metric: 'completed', targets: [1, 5, 15, 40, 100], icon: 'handshake', color: '#2E6A4F', group: 'exchanges' },
-  { key: 'live', metric: 'live', targets: [1, 5, 20, 50], icon: 'users', color: '#1E9A6A', group: 'exchanges' },
-  { key: 'online', metric: 'online', targets: [1, 5, 20, 50], icon: 'video', color: '#3A6FD8', group: 'exchanges' },
-  { key: 'triads', metric: 'triads', targets: [1, 3, 10], icon: 'triangle', color: '#8E7CC3', group: 'exchanges' },
+  { key: 'live', metric: 'live', targets: [1, 5, 20, 50], icon: 'users-round', color: '#1E9A6A', group: 'exchanges' },
+  { key: 'online', metric: 'online', targets: [1, 5, 20, 50], icon: 'monitor-play', color: '#3A6FD8', group: 'exchanges' },
+  { key: 'triads', metric: 'triads', targets: [1, 3, 10], icon: 'refresh-ccw-dot', color: '#8E7CC3', group: 'exchanges' },
   { key: 'diplomat', metric: 'countersAccepted', targets: [1, 5, 15], icon: 'scale', color: '#4B5BA6', group: 'exchanges' },
   { key: 'givers', metric: 'hoursGiven', targets: [3, 10, 25, 60, 150], icon: 'hand-heart', color: '#E08A1E', group: 'time' },
-  { key: 'learners', metric: 'hoursReceived', targets: [3, 10, 25, 60, 150], icon: 'brain', color: '#D24D7E', group: 'time' },
+  { key: 'learners', metric: 'hoursReceived', targets: [3, 10, 25, 60, 150], icon: 'lightbulb', color: '#D24D7E', group: 'time' },
   { key: 'gifts', metric: 'gifts', targets: [1, 5, 15], icon: 'gift', color: '#E5533B', group: 'time' },
-  { key: 'investor', metric: 'paidWithHours', targets: [1, 5, 15], icon: 'hourglass', color: '#B4683C', group: 'time' },
+  { key: 'investor', metric: 'paidWithHours', targets: [1, 5, 15], icon: 'piggy-bank', color: '#B4683C', group: 'time' },
   { key: 'early', metric: 'morning', targets: [1, 5, 20], icon: 'sunrise', color: '#F1B238', group: 'time' },
-  { key: 'night', metric: 'evening', targets: [1, 5, 20], icon: 'moon', color: '#3A6FD8', group: 'time' },
-  { key: 'weekend', metric: 'weekend', targets: [1, 5, 20], icon: 'sun', color: '#E08A1E', group: 'time' },
-  { key: 'neighbours', metric: 'peopleMet', targets: [3, 10, 25, 60], icon: 'house', color: '#4F8A2B', group: 'people' },
-  { key: 'cities', metric: 'citiesMet', targets: [2, 5, 10], icon: 'map', color: '#2B7A9E', group: 'people' },
+  { key: 'night', metric: 'evening', targets: [1, 5, 20], icon: 'moon-star', color: '#3A6FD8', group: 'time' },
+  { key: 'weekend', metric: 'weekend', targets: [1, 5, 20], icon: 'party-popper', color: '#E08A1E', group: 'time' },
+  { key: 'neighbours', metric: 'peopleMet', targets: [3, 10, 25, 60], icon: 'house-heart', color: '#4F8A2B', group: 'people' },
+  { key: 'cities', metric: 'citiesMet', targets: [2, 5, 10], icon: 'map-pinned', color: '#2B7A9E', group: 'people' },
   { key: 'near', metric: 'near', targets: [1, 5, 15], icon: 'door-open', color: '#3E9C8F', group: 'people' },
-  { key: 'far', metric: 'far', targets: [1, 5, 15], icon: 'route', color: '#5B6470', group: 'people' },
+  { key: 'far', metric: 'far', targets: [1, 5, 15], icon: 'train-front', color: '#5B6470', group: 'people' },
   { key: 'critic', metric: 'reviewsGiven', targets: [1, 5, 20, 50], icon: 'message-square-heart', color: '#C2477A', group: 'people' },
-  { key: 'stars', metric: 'fiveStars', targets: [1, 5, 20, 50], icon: 'star', color: '#F1B238', group: 'people' },
+  { key: 'stars', metric: 'fiveStars', targets: [1, 5, 20, 50], icon: 'sparkles', color: '#F1B238', group: 'people' },
   { key: 'chatty', metric: 'messages', targets: [10, 50, 200, 500], icon: 'messages-square', color: '#3E9C8F', group: 'people' },
-  { key: 'collector', metric: 'saved', targets: [1, 5, 15], icon: 'bookmark', color: '#4B5BA6', group: 'people' },
+  { key: 'collector', metric: 'saved', targets: [1, 5, 15], icon: 'library', color: '#4B5BA6', group: 'people' },
   { key: 'mentor', metric: 'skillsTaught', targets: [2, 5, 10, 20], icon: 'graduation-cap', color: '#2B7A9E', group: 'skills' },
-  { key: 'student', metric: 'skillsLearned', targets: [2, 5, 10, 20], icon: 'book-open', color: '#8E5CC3', group: 'skills' },
-  { key: 'allrounder', metric: 'categoriesTaught', targets: [2, 4, 7, 14], icon: 'shapes', color: '#8E5CC3', group: 'skills' },
+  { key: 'student', metric: 'skillsLearned', targets: [2, 5, 10, 20], icon: 'notebook-pen', color: '#8E5CC3', group: 'skills' },
+  { key: 'allrounder', metric: 'categoriesTaught', targets: [2, 4, 7, 14], icon: 'toolbox', color: '#8E5CC3', group: 'skills' },
   { key: 'curious', metric: 'categoriesLearned', targets: [2, 4, 7, 14], icon: 'telescope', color: '#D24D7E', group: 'skills' },
   { key: 'polyglot', metric: 'languagesTaught', targets: [1, 2, 4], icon: 'languages', color: '#E5533B', group: 'skills' },
-  { key: 'globetrotter', metric: 'languagesLearned', targets: [1, 2, 4], icon: 'globe', color: '#1E6FC2', group: 'skills' },
+  { key: 'globetrotter', metric: 'languagesLearned', targets: [1, 2, 4], icon: 'plane', color: '#1E6FC2', group: 'skills' },
 ]
 
 /** Soglie dei badge di categoria. */
@@ -138,9 +139,9 @@ interface Special {
 }
 
 export const SPECIALS: Special[] = [
-  { key: 'pioneer', metric: 'pioneer', target: 1, icon: 'flag', color: '#E5533B' },
+  { key: 'pioneer', metric: 'pioneer', target: 1, icon: 'rocket', color: '#E5533B' },
   { key: 'calling-card', metric: 'profileComplete', target: 1, icon: 'id-card', color: '#2B7A9E' },
-  { key: 'storyteller', metric: 'bio', target: 1, icon: 'pen-line', color: '#C2477A' },
+  { key: 'storyteller', metric: 'bio', target: 1, icon: 'feather', color: '#C2477A' },
   { key: 'always-free', metric: 'freeSlots', target: 12, icon: 'calendar-check', color: '#1E9A6A' },
   { key: 'supporter', metric: 'premium', target: 1, icon: 'crown', color: '#8E7CC3' },
   { key: 'pillar', metric: 'completed', target: 250, icon: 'landmark', color: '#10162F' },
@@ -192,7 +193,7 @@ export const BADGES: BadgeDef[] = [
         target,
         tier: i + 1,
         tiers: CATEGORY_TARGETS.length,
-        icon: categoryById(cat).icon,
+        icon: kind === 'teach' ? categoryById(cat).icon : CATEGORY_LEARN_ICONS[cat],
         color: categoryById(cat).color,
         value: (s: Stats) => (kind === 'teach' ? s.catTaught[cat] : s.catLearned[cat]) ?? 0,
       })),

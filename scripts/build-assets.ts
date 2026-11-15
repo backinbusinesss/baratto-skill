@@ -6,7 +6,7 @@
  *
  * Uso: npm run assets
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { geoArea, geoPath, geoTransform } from 'd3-geo'
@@ -15,6 +15,7 @@ import sharp from 'sharp'
 import { feature } from 'topojson-client'
 import type { GeometryCollection, Topology } from 'topojson-specification'
 import { ITALY_PROJ, project } from '../src/content/italy-proj'
+import { SKILL_ICONS } from '../src/content/skillIcons'
 
 const require = createRequire(import.meta.url)
 const root = process.cwd()
@@ -105,6 +106,19 @@ async function buildOg() {
   console.log('og.png: ok')
 }
 
+// ---------------------------------------------------------------- bandiere delle lingue (flag-icons, MIT)
+function buildFlags() {
+  const dir = join(dirname(require.resolve('flag-icons/package.json')), 'flags', '4x3')
+  const codes = [...new Set(Object.values(SKILL_ICONS).filter((v) => v.startsWith('flag:')).map((v) => v.slice(5)))]
+  for (const code of codes) {
+    const dest = join(root, 'public', 'flags', `${code}.svg`)
+    mkdirSync(dirname(dest), { recursive: true })
+    copyFileSync(join(dir, `${code}.svg`), dest)
+  }
+  console.log(`bandiere: ${codes.length}`)
+}
+
 buildItaly()
+buildFlags()
 await buildIcons()
 await buildOg()

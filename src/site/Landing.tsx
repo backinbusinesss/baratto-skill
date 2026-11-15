@@ -5,7 +5,7 @@ import { COMUNI } from '@/content/comuni'
 import { SKILLS } from '@/content/skills'
 import { getPeople } from '@/domain/people'
 import { getT, type Lang } from '@/i18n'
-import { CategoryIcon } from '@/ui/Icon'
+import { SkillIcon } from '@/ui/Icon'
 import { ItalyMap } from '@/ui/ItalyMap'
 import { Bento } from './Bento'
 import { Counter, FillStatement, Marquee, Reveal, RevealItem, SmoothScroll, WordRise } from './fx'
@@ -28,7 +28,7 @@ export function Landing({ lang }: { lang: Lang }) {
     return (
       <span key={id} className="inline-flex shrink-0 items-center gap-2 rounded-full bg-sheet px-4 py-2 text-[0.95rem] font-medium shadow-paper">
         <span style={{ color: categoryById(s.cat).color }}>
-          <CategoryIcon id={s.cat} size={15} />
+          <SkillIcon id={id} size={16} />
         </span>
         {tr.skill(id)}
       </span>

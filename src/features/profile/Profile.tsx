@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react'
 import { comuneById } from '@/content/comuni'
 import { BADGES, badgeProgress } from '@/domain/badges'
 import { haversineKm } from '@/domain/geo'
+import { balance } from '@/domain/timebank'
 import { hashString, mulberry32 } from '@/domain/rng'
 import { isPremium, limitsFor } from '@/domain/plans'
 import { shortName } from '@/domain/people'
@@ -19,6 +20,7 @@ import { myRating, myStats, profileCompleteness } from '@/store/selectors'
 import { AvailabilityGrid } from '@/ui/AvailabilityGrid'
 import { Avatar } from '@/ui/Avatar'
 import { BadgeStamp } from '@/ui/BadgeStamp'
+import { MemberCard } from '@/ui/MemberCard'
 import { Empty, Section, SkillChip, Stars } from '@/ui/bits'
 import { ComuneSearch } from '@/ui/ComuneSearch'
 import { Sheet } from '@/ui/Sheet'
@@ -76,7 +78,10 @@ export function Profile() {
         </button>
       )}
 
-      {me.bio && <p className="hand mt-6 max-w-2xl text-[1.6rem] leading-snug">“{me.bio}”</p>}
+      <div className="mt-8 grid items-center gap-8 md:grid-cols-[1fr_340px]">
+        {me.bio ? <p className="hand max-w-2xl text-[1.6rem] leading-snug">“{me.bio}”</p> : <span />}
+        <MemberCard name={me.name} since={me.joined || new Date().toISOString()} hours={balance(state.ledger)} premium={premium} />
+      </div>
 
       <div className="grid gap-x-10 lg:grid-cols-2">
         <Section title={tr.t('profile.offers')}>

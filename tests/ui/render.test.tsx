@@ -27,7 +27,7 @@ describe('sito', () => {
     render(<Landing lang="it" />)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Io ti insegno')
     expect(screen.getAllByRole('link', { name: /Inizia a scambiare/ })[0].getAttribute('href')).toMatch(/^\/app\/?$/)
-    expect(screen.getByText(/scambi perfetti|scambio perfetto/)).toBeInTheDocument()
+    expect(screen.getAllByText(/\d+ scambi? perfett[io]/).length).toBeGreaterThan(0)
   })
 
   it('la home inglese è tradotta', () => {

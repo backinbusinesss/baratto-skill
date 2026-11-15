@@ -10,6 +10,7 @@ import { PaymentsProvider } from '@/providers/payments'
 import { VideoProvider } from '@/providers/video'
 import { useApp } from '@/store/app'
 import { useHydrated } from '@/store/hooks'
+import { Celebration } from './Celebration'
 import { BottomNav, SideNav, TopBar } from './Nav'
 import { Simulator } from './Simulator'
 import { Toaster } from './Toaster'
@@ -52,6 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           ) : (
             <Onboarding />
           )}
+          <Celebration />
           <Toaster />
         </VideoProvider>
       </PaymentsProvider>

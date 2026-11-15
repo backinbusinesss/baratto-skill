@@ -4,6 +4,7 @@ import { Check, MessageCircle, RefreshCw, X } from 'lucide-react'
 import { useEffect } from 'react'
 import { findPerson, useApp } from '@/store/app'
 import { getT } from '@/i18n'
+import { useCelebration } from './Celebration'
 import { toast } from './Toaster'
 
 /**
@@ -27,7 +28,9 @@ export function Simulator() {
           if (here.includes(`id=${ev.personId}`)) continue
           toast({ text: tr.t('toasts.newMessage', { name }), href: `/app/chat/?id=${ev.personId}`, icon: <MessageCircle size={18} /> })
         } else if (ev.type === 'accepted') {
-          toast({ text: tr.t('exchanges.acceptedToast', { name }), href: `/app/scambio/?id=${ev.exchangeId}`, tone: 'ok', icon: <Check size={18} /> })
+          // il momento più bello della demo: festa a tutto schermo (se non ce n'è già una)
+          if (!useCelebration.getState().exchangeId) useCelebration.getState().show(ev.exchangeId)
+          else toast({ text: tr.t('exchanges.acceptedToast', { name }), href: `/app/scambio/?id=${ev.exchangeId}`, tone: 'ok', icon: <Check size={18} /> })
         } else if (ev.type === 'countered') {
           toast({ text: tr.t('exchanges.counteredToast', { name }), href: `/app/scambio/?id=${ev.exchangeId}`, tone: 'warn', icon: <RefreshCw size={18} /> })
         } else {

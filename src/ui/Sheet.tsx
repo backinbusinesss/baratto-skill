@@ -3,6 +3,7 @@
 import { X } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { type ReactNode, useEffect, useId, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { cx } from '@/lib/cx'
 
 /**
@@ -59,7 +60,9 @@ export function Sheet({
     }
   }, [open, onClose])
 
-  return (
+  // in un portale su <body>: così nessun contenitore animato (transform) lo rinchiude sotto il menu
+  if (typeof document === 'undefined') return null
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
@@ -99,6 +102,7 @@ export function Sheet({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   )
 }

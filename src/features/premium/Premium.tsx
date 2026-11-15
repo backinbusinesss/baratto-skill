@@ -2,16 +2,20 @@
 
 import { Check, Crown, Minus } from 'lucide-react'
 import { formatPrice, isPremium, PLANS, type PlanId, PREMIUM_RADIUS_KM, TRIAL_DAYS, yearlySavingPct } from '@/domain/plans'
+import { balance } from '@/domain/timebank'
 import { cx } from '@/lib/cx'
 import { usePayments } from '@/providers/payments'
 import { useApp } from '@/store/app'
 import { useT } from '@/store/hooks'
 import { Section } from '@/ui/bits'
+import { MemberCard } from '@/ui/MemberCard'
 import { toast } from '@/ui/Toaster'
 
 export function Premium() {
   const tr = useT()
   const plan = useApp((s) => s.plan)
+  const me = useApp((s) => s.me)!
+  const hours = useApp((s) => balance(s.ledger))
   const { checkout, cancelSubscription } = usePayments()
 
   const buy = async (id: PlanId) => {
@@ -32,12 +36,15 @@ export function Premium() {
 
   return (
     <div>
+      <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_1fr]">
       <div className="max-w-2xl">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow px-3 py-1 text-sm font-bold text-[#10162f]">
           <Crown size={15} /> {tr.t('common.premium')}
         </span>
         <h1 className="display mt-4 text-[2.9rem] sm:text-[3.8rem]">{tr.t('premium.title')}</h1>
         <p className="mt-3 text-lg text-muted">{tr.t('premium.sub')}</p>
+      </div>
+      <MemberCard className="mx-auto w-full max-w-sm" name={me.name} since={me.joined || new Date().toISOString()} hours={hours} premium={isPremium(plan)} />
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-3">

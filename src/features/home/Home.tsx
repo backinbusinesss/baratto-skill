@@ -1,6 +1,7 @@
 'use client'
 
-import { ArrowRight, CalendarDays, Crown, Hourglass, Lock } from 'lucide-react'
+import { ArrowRight, CalendarDays, Compass, Crown, Lock, MapPin, Users } from 'lucide-react'
+import { motion, useReducedMotion } from 'motion/react'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import { CATEGORIES } from '@/content/categories'
@@ -22,6 +23,7 @@ import { useMatches, usePeople } from '../people/useMatches'
 
 export function Home() {
   const tr = useT()
+  const reduce = useReducedMotion()
   const me = useApp((s) => s.me)!
   const plan = useApp((s) => s.plan)
   const state = useApp()
@@ -39,35 +41,48 @@ export function Home() {
 
   return (
     <div>
-      <header className="pt-2">
-        <h1 className="display text-[2.7rem] sm:text-[3.6rem]">{tr.t(greet, { name: me.name })}</h1>
-        <p className="mt-2 text-muted">
-          {tr.t('home.sub', { people: tr.t('common.people', { count: matches.length }), km: me.radiusKm, city: city.name })}
-        </p>
-      </header>
-
-      {/* riga di riepilogo: tre numeri che portano dove servono */}
-      <div className="mt-6 grid grid-cols-3 divide-x divide-line overflow-hidden rounded-2xl bg-sheet shadow-paper">
-        <Link href="/app/vicini/" className="p-4 hover:bg-well">
-          <span className="num block text-[2rem] font-extrabold leading-none" style={{ fontStretch: '72%' }}>
-            {kinds.perfect}
-          </span>
-          <span className="mt-1 block text-[0.8rem] text-muted">{tr.t('home.statsPerfect')}</span>
-        </Link>
-        <Link href="/app/scambi/" className="p-4 hover:bg-well">
-          <span className="num block text-[2rem] font-extrabold leading-none" style={{ fontStretch: '72%' }}>
-            {activeCount(state)}
-          </span>
-          <span className="mt-1 block text-[0.8rem] text-muted">{tr.t('home.statsActive')}</span>
-        </Link>
-        <Link href="/app/ore/" className="p-4 hover:bg-well">
-          <span className="num flex items-center gap-1.5 text-[2rem] font-extrabold leading-none" style={{ fontStretch: '72%' }}>
-            <Hourglass size={20} className="text-cobalt" />
-            {tr.num(hours)}
-          </span>
-          <span className="mt-1 block text-[0.8rem] text-muted">{tr.t('home.statsBalance')}</span>
-        </Link>
-      </div>
+      {/* intestazione: saluto, numeri e azioni rapide su una lastra blu notte */}
+      <motion.header
+        className="home-hero p-6 sm:p-8"
+        initial={reduce ? false : { opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <span className="premium-sheen" aria-hidden />
+        <div className="relative grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-end">
+          <div>
+            <p className="flex items-center gap-2 text-sm text-white/70">
+              <MapPin size={15} className="text-yellow" />
+              {tr.t('home.sub', { people: tr.t('common.people', { count: matches.length }), km: me.radiusKm, city: city.name })}
+            </p>
+            <h1 className="display mt-3 text-[2.6rem] text-white sm:text-[3.6rem]">{tr.t(greet, { name: me.name })}</h1>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <Link href="/app/vicini/" className="btn btn-yellow">
+                <Users size={17} /> {tr.t('home.findPeople')}
+              </Link>
+              <Link href="/app/esplora/" className="btn border border-white/20 text-white hover:bg-white/10">
+                <Compass size={17} /> {tr.t('home.quickPropose')}
+              </Link>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {(
+              [
+                ['/app/vicini/', kinds.perfect, tr.t('home.statsPerfect')],
+                ['/app/scambi/', activeCount(state), tr.t('home.statsActive')],
+                ['/app/ore/', tr.num(hours), tr.t('home.statsBalance')],
+              ] as const
+            ).map(([href, n, label]) => (
+              <Link key={href} href={href} className="rounded-2xl border border-white/10 bg-white/[0.06] p-3 transition-colors hover:bg-white/[0.12]">
+                <span className="num block text-[2.1rem] font-extrabold leading-none text-white" style={{ fontStretch: '70%' }}>
+                  {n}
+                </span>
+                <span className="mt-1 block text-[0.74rem] leading-tight text-white/65">{label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </motion.header>
 
       <div className="grid gap-x-8 lg:grid-cols-2">
         <Section

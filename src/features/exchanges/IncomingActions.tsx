@@ -6,7 +6,7 @@ import { cx } from '@/lib/cx'
 import { type Exchange, useApp } from '@/store/app'
 import { useT } from '@/store/hooks'
 import { Sheet } from '@/ui/Sheet'
-import { toast } from '@/ui/Toaster'
+import { useCelebration } from '@/ui/Celebration'
 import { usePerson } from '../people/useMatches'
 
 /** Accetta (scegliendo uno degli orari proposti) o rifiuta una proposta in arrivo. */
@@ -18,7 +18,14 @@ export function IncomingActions({ ex }: { ex: Exchange }) {
   const [slot, setSlot] = useState(ex.slots[0] ?? null)
   return (
     <>
-      <button className="btn btn-mint btn-sm" onClick={() => (ex.slots.length > 1 ? setOpen(true) : respond(ex.id, true))}>
+      <button
+        className="btn btn-mint btn-sm"
+        onClick={() => {
+          if (ex.slots.length > 1) return setOpen(true)
+          respond(ex.id, true)
+          useCelebration.getState().show(ex.id)
+        }}
+      >
         <Check size={16} /> {tr.t('exchanges.accept')}
       </button>
       <button className="btn btn-ghost btn-sm" onClick={() => respond(ex.id, false)}>
@@ -36,7 +43,7 @@ export function IncomingActions({ ex }: { ex: Exchange }) {
             onClick={() => {
               respond(ex.id, true, slot ?? undefined)
               setOpen(false)
-              toast({ text: tr.t('chat.system.accepted', { when: slot ? tr.slot(slot) : '' }), tone: 'ok', icon: <Check size={18} /> })
+              useCelebration.getState().show(ex.id)
             }}
           >
             <Check size={18} /> {tr.t('exchanges.accept')}

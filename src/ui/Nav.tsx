@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowLeftRight, CalendarDays, Compass, Crown, Home, Hourglass, MessageCircle, User, Users } from 'lucide-react'
+import { motion } from 'motion/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { comuneById } from '@/content/comuni'
@@ -82,13 +83,18 @@ export function SideNav() {
       href={`${it.href}/`.replace('//', '/')}
       aria-current={active(it.href) ? 'page' : undefined}
       className={cx(
-        'flex items-center gap-3 rounded-xl px-3 py-2.5 font-semibold transition-colors',
-        active(it.href) ? 'bg-ink text-paper' : 'text-muted hover:bg-well hover:text-ink',
+        'relative flex items-center gap-3 rounded-xl px-3 py-2.5 font-semibold transition-colors',
+        active(it.href) ? 'text-paper' : 'text-muted hover:bg-well hover:text-ink',
       )}
     >
-      <it.icon size={19} />
-      <span className="flex-1">{tr.t(it.key)}</span>
-      {it.badge && <Badge n={badges[it.badge]} />}
+      {active(it.href) && <motion.span layoutId="side-active" className="absolute inset-0 rounded-xl bg-ink" transition={{ type: 'spring', stiffness: 420, damping: 36 }} />}
+      <it.icon size={19} className="relative" />
+      <span className="relative flex-1">{tr.t(it.key)}</span>
+      {it.badge && (
+        <span className="relative">
+          <Badge n={badges[it.badge]} />
+        </span>
+      )}
     </Link>
   )
   return (
@@ -129,29 +135,28 @@ export function SideNav() {
   )
 }
 
-/** Barra in basso sul telefono. */
+/** Barra in basso sul telefono: una pillola sospesa, l'evidenziatore giallo scivola tra le voci. */
 export function BottomNav() {
   const tr = useT()
   const active = useActive()
   const badges = useBadges()
   return (
-    <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/92 backdrop-blur-md lg:hidden">
-      <ul className="mx-auto flex max-w-lg">
+    <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 px-3 pb-2 lg:hidden">
+      <ul className="nav-pill mx-auto flex max-w-md rounded-[26px] p-1.5">
         {MAIN.map((it) => {
           const on = active(it.href)
           return (
-            <li key={it.href} className="flex-1">
+            <li key={it.href} className="relative flex-1">
               <Link
                 href={`${it.href}/`.replace('//', '/')}
                 aria-current={on ? 'page' : undefined}
-                className={cx('relative flex flex-col items-center gap-0.5 pb-1 pt-2 text-[0.7rem] font-semibold', on ? 'text-ink' : 'text-faint')}
+                className={cx('relative flex flex-col items-center gap-0.5 rounded-[20px] pb-1.5 pt-2 text-[0.68rem] font-semibold transition-colors', on ? 'text-[#10162f]' : 'text-faint hover:text-ink')}
               >
-                <span className={cx('grid h-8 w-12 place-items-center rounded-full transition-colors', on && 'bg-yellow text-[#10162f]')}>
-                  <it.icon size={20} strokeWidth={on ? 2.4 : 2} />
-                </span>
-                {tr.t(it.key)}
+                {on && <motion.span layoutId="nav-active" className="absolute inset-0 rounded-[20px] bg-yellow" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
+                <it.icon size={20} strokeWidth={on ? 2.4 : 2} className="relative" />
+                <span className="relative">{tr.t(it.key)}</span>
                 {it.badge && badges[it.badge] > 0 && (
-                  <span className="absolute right-[calc(50%-24px)] top-1">
+                  <span className="absolute right-[calc(50%-22px)] top-1">
                     <Badge n={badges[it.badge]} />
                   </span>
                 )}

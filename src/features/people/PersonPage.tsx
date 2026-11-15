@@ -200,12 +200,12 @@ export function PersonPage() {
       </div>
 
       {/* sul telefono le azioni restano a portata di pollice, sopra il menu */}
-      <div className="fixed inset-x-0 bottom-[68px] z-30 border-t border-line bg-paper/95 px-4 py-2.5 backdrop-blur lg:hidden">
+      <div className="fixed inset-x-0 bottom-[80px] z-30 px-4 pb-1 lg:hidden">
         <div className="mx-auto flex max-w-lg gap-2">
-          <button className="btn btn-primary flex-1" onClick={() => openPropose()}>
+          <button className="btn btn-primary flex-1 shadow-[0_14px_30px_-12px_var(--cobalt)]" onClick={() => openPropose()}>
             <Send size={17} /> {tr.t('person.propose')}
           </button>
-          <Link href={`/app/chat/?id=${p.id}`} className="btn btn-outline btn-icon !h-11 !w-11" aria-label={tr.t('person.message')}>
+          <Link href={`/app/chat/?id=${p.id}`} className="btn btn-outline btn-icon !h-11 !w-11 bg-sheet" aria-label={tr.t('person.message')}>
             <MessageCircle size={18} />
           </Link>
         </div>

@@ -7,7 +7,7 @@ export function LegalPage({ title, updated, children }: { title: string; updated
   return (
     <>
       <SiteHeader lang="it" />
-      <main className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
+      <main className="mx-auto max-w-3xl px-4 pb-14 pt-32 sm:px-6">
         <h1 className="display text-[clamp(2.8rem,8vw,4.4rem)]">{title}</h1>
         <p className="mt-3 text-sm text-muted">Ultimo aggiornamento: {updated}</p>
         <p className="mt-2 text-sm text-faint" lang="en">

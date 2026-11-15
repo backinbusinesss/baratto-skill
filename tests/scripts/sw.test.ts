@@ -1,3 +1,4 @@
+// @ts-expect-error modulo JavaScript senza tipi
 import { buildServiceWorker } from '../../scripts/generate-sw.mjs'
 
 describe('service worker', () => {

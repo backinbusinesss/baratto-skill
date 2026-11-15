@@ -12,6 +12,7 @@ import { cx } from '@/lib/cx'
 import { useApp } from '@/store/app'
 import { useT } from '@/store/hooks'
 import { CategoryIcon, SkillIcon } from '@/ui/Icon'
+import { ScrollRow } from '@/ui/ScrollRow'
 import { usePeople } from '../people/useMatches'
 
 /** Quante persone nel raggio offrono / cercano ciascuna competenza. */
@@ -60,7 +61,7 @@ export function Explore() {
         <input className="field !min-h-12 !pl-11 !text-[1.05rem]" value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr.t('explore.searchPlaceholder')} aria-label={tr.t('common.search')} />
       </div>
 
-      <div className="no-scrollbar -mx-4 mt-3 flex gap-1.5 overflow-x-auto px-4 pb-1 lg:mx-0 lg:flex-wrap lg:px-0">
+      <ScrollRow className="mt-3" innerClassName="gap-1.5 pb-1">
         <button className={cx('chip shrink-0', !cat && 'on')} onClick={() => router.replace('/app/esplora/')}>
           {tr.t('explore.allCategories')}
         </button>
@@ -72,7 +73,7 @@ export function Explore() {
             {tr.cat(c.id)}
           </button>
         ))}
-      </div>
+      </ScrollRow>
 
       {groups.length === 0 && <p className="mt-8 text-muted">{tr.t('explore.noResults', { q })}</p>}
 

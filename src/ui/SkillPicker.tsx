@@ -10,6 +10,7 @@ import { LEVELS, type Level, type SkillLevel } from '@/domain/types'
 import { cx } from '@/lib/cx'
 import { useT } from '@/store/hooks'
 import { CategoryIcon, SkillBadgeIcon, SkillIcon } from './Icon'
+import { ScrollRow } from './ScrollRow'
 import { LevelPips } from './bits'
 
 /**
@@ -102,7 +103,7 @@ export function SkillPicker({
       </div>
 
       {!q && (
-        <div className="no-scrollbar -mx-1 mt-3 flex gap-1.5 overflow-x-auto px-1 pb-1">
+        <ScrollRow className="mt-3" innerClassName="gap-1.5 pb-1">
           <button type="button" className={cx('chip shrink-0', cat === 'popular' && 'on')} onClick={() => setCat('popular')}>
             {tr.t('explore.popular')}
           </button>
@@ -112,7 +113,7 @@ export function SkillPicker({
               {tr.cat(c.id)}
             </button>
           ))}
-        </div>
+        </ScrollRow>
       )}
 
       <div className="mt-3 flex flex-wrap gap-1.5">

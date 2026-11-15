@@ -18,6 +18,7 @@ import { Empty, Segmented } from '@/ui/bits'
 import { ComuneSearch } from '@/ui/ComuneSearch'
 import { ItalyMap } from '@/ui/ItalyMap'
 import { Sheet } from '@/ui/Sheet'
+import { ScrollRow } from '@/ui/ScrollRow'
 import { PersonFlyer } from './PersonFlyer'
 import { useMatches } from './useMatches'
 
@@ -99,7 +100,7 @@ export function People() {
             {activeFilters > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-cobalt px-1 text-[0.7rem] font-bold text-on-cobalt">{activeFilters}</span>}
           </button>
         </div>
-        <div className="no-scrollbar mt-2 flex items-center gap-1.5 overflow-x-auto pb-1">
+        <ScrollRow className="mt-2" innerClassName="items-center gap-1.5 pb-1">
           {(['best', 'near', 'rating', 'new'] as SortKey[]).map((s) => (
             <button key={s} className={cx('chip shrink-0', sort === s && 'on')} aria-pressed={sort === s} onClick={() => setSort(s)}>
               {tr.t(`people.sort${s[0].toUpperCase()}${s.slice(1)}` as 'people.sortBest')}
@@ -115,7 +116,7 @@ export function People() {
               {tr.skill(skill)} <X size={14} />
             </button>
           )}
-        </div>
+        </ScrollRow>
       </div>
 
       <p className="mb-4 mt-2 text-sm text-muted">{tr.t('people.results', { count: matches.length })}</p>

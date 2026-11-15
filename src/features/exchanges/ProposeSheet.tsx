@@ -16,6 +16,7 @@ import { proposalsThisMonth, type ProposeResult, useApp } from '@/store/app'
 import { useT } from '@/store/hooks'
 import { SkillIcon } from '@/ui/Icon'
 import { Sheet } from '@/ui/Sheet'
+import { ScrollRow } from '@/ui/ScrollRow'
 import { toast } from '@/ui/Toaster'
 
 const DURATIONS = [1, 1.5, 2]
@@ -198,7 +199,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
       <fieldset className="mt-6">
         <legend className="font-bold">{tr.t('propose.slots')}</legend>
         <p className="mb-2 text-sm text-muted">{tr.t('propose.slotsHint')}</p>
-        <div className="no-scrollbar -mx-5 flex gap-1.5 overflow-x-auto px-5 pb-1 md:mx-0 md:flex-wrap md:px-0">
+        <ScrollRow innerClassName="gap-1.5 pb-1">
           {shown.slice(0, 18).map((o) => {
             const on = slots.includes(o.iso)
             return (
@@ -219,7 +220,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
               </button>
             )
           })}
-        </div>
+        </ScrollRow>
       </fieldset>
 
       <label className="mt-6 block">

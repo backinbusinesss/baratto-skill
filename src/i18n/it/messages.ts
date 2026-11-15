@@ -41,6 +41,8 @@ export const messages = {
     install: "Installa l'app",
     openApp: "Apri l'app",
     copied: 'Copiato!',
+    scrollLeft: 'Scorri a sinistra',
+    scrollRight: 'Scorri a destra',
     unlock: 'Sblocca con Premium',
   },
   levels: { '1': 'Base', '2': 'Intermedio', '3': 'Avanzato', '4': 'Esperto' },

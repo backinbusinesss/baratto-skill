@@ -16,6 +16,7 @@ import { activeCount, incomingPending, nextAppointment } from '@/store/selectors
 import { Avatar } from '@/ui/Avatar'
 import { Empty, Section } from '@/ui/bits'
 import { CategoryIcon } from '@/ui/Icon'
+import { ScrollRow } from '@/ui/ScrollRow'
 import { ExchangeTicket } from '../exchanges/ExchangeTicket'
 import { IncomingActions } from '../exchanges/IncomingActions'
 import { PersonFlyer } from '../people/PersonFlyer'
@@ -171,7 +172,7 @@ export function Home() {
           </Link>
         }
       >
-        <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0">
+        <ScrollRow innerClassName="gap-2 pb-2">
           {CATEGORIES.map((c) => (
             <Link key={c.id} href={`/app/esplora/?cat=${c.id}`} className="chip shrink-0 !min-h-10 !px-3.5">
               <span style={{ color: c.color }}>
@@ -180,7 +181,7 @@ export function Home() {
               {tr.cat(c.id)}
             </Link>
           ))}
-        </div>
+        </ScrollRow>
       </Section>
     </div>
   )

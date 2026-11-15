@@ -39,6 +39,8 @@ export const messages: Messages = {
     install: 'Install the app',
     openApp: 'Open the app',
     copied: 'Copied!',
+    scrollLeft: 'Scroll left',
+    scrollRight: 'Scroll right',
     unlock: 'Unlock with Premium',
   },
   levels: { '1': 'Beginner', '2': 'Intermediate', '3': 'Advanced', '4': 'Expert' },

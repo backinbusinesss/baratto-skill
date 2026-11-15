@@ -1,0 +1,53 @@
+{
+  "name": "baratto-skill",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Baratto Skill — scambia competenze con chi ti sta vicino",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && node scripts/generate-sw.mjs",
+    "test": "vitest run",
+    "assets": "tsx scripts/build-assets.ts",
+    "typecheck": "tsc --noEmit",
+    "serve": "node scripts/serve-out.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "lucide-react": "^1.73.0",
+    "motion": "^14.14.0",
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "zustand": "^5.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.10",
+    "@types/d3-geo": "^3.1.1",
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5",
+    "@vitejs/plugin-react": "^6.3.0",
+    "d3-geo": "^3.1.2",
+    "jsdom": "^31.0.1",
+    "postcss": "^8.5.33",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.5",
+    "topojson-client": "^3.1.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0",
+    "world-atlas": "^2.0.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

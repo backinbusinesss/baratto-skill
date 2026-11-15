@@ -72,6 +72,7 @@ export function WordRise({ lines, className, delay = 0.1 }: { lines: { text: str
     <span className={className}>
       {lines.map((line, li) => (
         <span key={li} className={cx('block', line.className)}>
+          {li > 0 && <span className="sr-only"> </span>}
           {line.text.split(' ').map((w, wi) => {
             const n = i++
             return (

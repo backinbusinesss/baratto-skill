@@ -14,9 +14,8 @@ export default function Page() {
 
       <h2>Chi tratta i dati</h2>
       <p>
-        Il titolare del trattamento è il gestore del progetto Baratto Skill. Per qualsiasi domanda puoi scrivere tramite la
-        pagina del progetto su GitHub. Quando il servizio diventerà operativo questa sezione indicherà la ragione sociale, la
-        sede e un indirizzo email dedicato.
+        Il titolare del trattamento è <strong>CarlHost di Ulivi Nicolò</strong>, Via Ventisette Novembre 1, 20015 Parabiago (MI), P.IVA IT14943820960, email e
+        PEC <a href="mailto:admin@carlhost.com">admin@carlhost.com</a>. Per qualsiasi domanda o per esercitare i tuoi diritti scrivi a questo indirizzo.
       </p>
 
       <h2>Quali dati, e dove restano</h2>

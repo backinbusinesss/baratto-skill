@@ -11,6 +11,12 @@ export default function Page() {
         prima di usare il servizio.
       </p>
 
+      <h2>Chi gestisce il servizio</h2>
+      <p>
+        Baratto Skill è un progetto di <strong>CarlHost di Ulivi Nicolò</strong>, Via Ventisette Novembre 1, 20015 Parabiago (MI), P.IVA IT14943820960, email e
+        PEC <a href="mailto:admin@carlhost.com">admin@carlhost.com</a>.
+      </p>
+
       <h2>Cos&apos;è Baratto Skill</h2>
       <p>
         Baratto Skill aiuta le persone di una stessa zona a scambiarsi competenze e tempo, senza denaro: un&apos;ora insegnata

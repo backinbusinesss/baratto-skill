@@ -35,6 +35,12 @@ export default function Page() {
         I caratteri tipografici sono inclusi nel sito e non vengono caricati da servizi esterni. Il sito è ospitato su
         GitHub Pages: vedi la pagina <a href="../privacy/">Privacy</a>.
       </p>
+
+      <h2>Contatti</h2>
+      <p>
+        <strong>CarlHost di Ulivi Nicolò</strong>, Via Ventisette Novembre 1, 20015 Parabiago (MI), P.IVA IT14943820960, email e
+        PEC <a href="mailto:admin@carlhost.com">admin@carlhost.com</a>.
+      </p>
     </LegalPage>
   )
 }

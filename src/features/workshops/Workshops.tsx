@@ -220,7 +220,7 @@ function HostSheet({ open, onClose, premium }: { open: boolean; onClose(): void;
   const min = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toLocaleDateString('sv-SE')
 
   const submit = () => {
-    if (!skill || !date) return toast({ text: tr.t('workshops.fillAll'), tone: 'warn' })
+    if (!skill || !date || date < min || !/^\d{2}:\d{2}$/.test(time)) return toast({ text: tr.t('workshops.fillAll'), tone: 'warn' })
     const r = host({ skill, at: `${date}T${time}`, minutes, mode: effectiveMode, capacity })
     if (r !== 'ok') return toast({ text: tr.t('workshops.hostLocked'), tone: 'warn' })
     toast({ text: tr.t('workshops.published'), tone: 'ok', icon: <Users size={18} /> })

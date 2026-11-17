@@ -492,7 +492,7 @@ export const messages = {
     capacity: 'Posti',
     publish: 'Pubblica',
     published: 'Workshop pubblicato: le persone vicine lo vedono già.',
-    fillAll: 'Scegli competenza e giorno.',
+    fillAll: 'Scegli competenza, giorno (da domani) e ora.',
     hostNote: 'Ogni partecipante paga {h} h: con tutti i posti pieni incassi {max} ore.',
   },
   video: {

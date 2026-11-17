@@ -490,7 +490,7 @@ export const messages: Messages = {
     capacity: 'Seats',
     publish: 'Publish',
     published: 'Workshop published: people nearby can already see it.',
-    fillAll: 'Pick a skill and a day.',
+    fillAll: 'Pick a skill, a day (from tomorrow) and a time.',
     hostNote: 'Each participant pays {h} h: with every seat taken you earn {max} hours.',
   },
   video: {

@@ -28,6 +28,7 @@ export function Premium() {
     [tr.t('premium.features.unlimited'), false],
     [tr.t('premium.features.radius', { km: PREMIUM_RADIUS_KM }), false],
     [tr.t('premium.features.triads'), false],
+    [tr.t('premium.features.workshops'), false],
     [tr.t('premium.features.filters'), false],
     [tr.t('premium.features.views'), false],
     [tr.t('premium.features.badge'), false],

@@ -13,8 +13,8 @@ export function Hours() {
   const ledger = useApp((s) => s.ledger)
   const neighbors = useApp((s) => s.neighbors)
   const total = balance(ledger)
-  const gave = ledger.filter((e) => e.kind === 'gave').reduce((n, e) => n + e.hours, 0)
-  const received = -ledger.filter((e) => e.kind === 'received').reduce((n, e) => n + e.hours, 0)
+  const gave = ledger.filter((e) => e.kind === 'gave' || e.kind === 'workshopHosted').reduce((n, e) => n + e.hours, 0)
+  const received = -ledger.filter((e) => e.kind === 'received' || e.kind === 'workshop').reduce((n, e) => n + e.hours, 0)
   const series = monthlySeries(ledger, 6)
   const max = Math.max(2, ...series.flatMap((s) => [s.gave, s.received]))
   // la clessidra: quanto è "piena" rispetto a un tetto visivo di 10 ore
@@ -79,7 +79,7 @@ export function Hours() {
               {[...ledger].reverse().map((e) => {
                 const p = e.personId ? findPerson(neighbors, e.personId) : undefined
                 const label =
-                  e.kind === 'gave' || e.kind === 'received'
+                  e.kind === 'gave' || e.kind === 'received' || e.kind === 'workshop' || e.kind === 'workshopHosted'
                     ? tr.t(`hours.kinds.${e.kind}`, { skill: e.skill ? tr.skill(e.skill) : '…', name: p?.first ?? '…' })
                     : tr.t(`hours.kinds.${e.kind}`)
                 return (

@@ -15,6 +15,8 @@ export interface Plan {
   triads: boolean
   advancedFilters: boolean
   profileViews: boolean
+  /** organizzare workshop di gruppo (partecipare è sempre gratis, si paga in ore) */
+  hostWorkshops: boolean
 }
 
 export const TRIAL_DAYS = 14
@@ -33,6 +35,7 @@ export const PLANS: Record<PlanId, Plan> = {
     triads: false,
     advancedFilters: false,
     profileViews: false,
+    hostWorkshops: false,
   },
   'premium-monthly': {
     id: 'premium-monthly',
@@ -45,6 +48,7 @@ export const PLANS: Record<PlanId, Plan> = {
     triads: true,
     advancedFilters: true,
     profileViews: true,
+    hostWorkshops: true,
   },
   'premium-yearly': {
     id: 'premium-yearly',
@@ -57,6 +61,7 @@ export const PLANS: Record<PlanId, Plan> = {
     triads: true,
     advancedFilters: true,
     profileViews: true,
+    hostWorkshops: true,
   },
 }
 

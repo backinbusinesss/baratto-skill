@@ -68,6 +68,7 @@ export function Pricing({ lang }: { lang: Lang }) {
               tr.t('premium.features.unlimited'),
               tr.t('premium.features.radius', { km: PREMIUM_RADIUS_KM }),
               tr.t('premium.features.triads'),
+              tr.t('premium.features.workshops'),
               tr.t('premium.features.filters'),
               tr.t('premium.features.views'),
             ].map((f) => (

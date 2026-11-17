@@ -28,6 +28,8 @@ export interface Match {
   get: SkillLevel[]
   /** fasce orarie libere in comune */
   availOverlap: number
+  /** fuori dal mio raggio, raggiungibile solo in videochiamata */
+  remote: boolean
 }
 
 const KIND_SCORE: Record<MatchKind, number> = { perfect: 100, theyTeach: 55, theyLearn: 30, none: 0 }
@@ -38,6 +40,9 @@ export function matchKind(give: unknown[], get: unknown[]): MatchKind {
   if (give.length) return 'theyLearn'
   return 'none'
 }
+
+/** Entrambi accettano la videochiamata: la distanza non conta più. */
+export const canMeetOnline = (a: Mode, b: Mode) => a !== 'live' && b !== 'live'
 
 /** Gli scambi dal vivo con chi fa solo online (e viceversa) non funzionano. */
 export function modesCompatible(a: Mode, b: Mode): boolean {
@@ -61,10 +66,14 @@ export function scoreMatch(me: Seeker, p: Person, distKm: number, radiusKm: numb
     if (p.verified) score += 2
     if (p.premium) score += 6
   }
-  return { person: p, distKm, score: Math.round(score * 10) / 10, kind, give, get, availOverlap }
+  return { person: p, distKm, score: Math.round(score * 10) / 10, kind, give, get, availOverlap, remote: distKm > radiusKm }
 }
 
 export type SortKey = 'best' | 'near' | 'rating' | 'new'
+export type Reach = 'near' | 'online' | 'both'
+
+/** La portata di default: chi ha attivato la videochiamata cerca anche fuori dal raggio. */
+export const defaultReach = (mode: Mode): Reach => (mode === 'live' ? 'near' : 'both')
 
 export interface MatchQuery {
   center: LatLon
@@ -76,6 +85,11 @@ export interface MatchQuery {
   cat?: CategoryId
   minLevel?: Level
   mode?: 'any' | 'live' | 'online'
+  /**
+   * near: solo nel raggio · online: chiunque accetti la videochiamata, ovunque sia ·
+   * both: nel raggio oppure in videochiamata da tutta Italia. Default: near.
+   */
+  reach?: Reach
   /** solo chi ha almeno una fascia libera in comune con me */
   availOnly?: boolean
   verifiedOnly?: boolean
@@ -99,7 +113,12 @@ export function findMatches(me: Seeker, people: Person[], q: MatchQuery): Match[
   for (const p of people) {
     if (q.exclude?.has(p.id)) continue
     const d = haversineKm(q.center, p)
-    if (d > q.radiusKm) continue
+    const reach = q.reach ?? 'near'
+    const inRadius = d <= q.radiusKm
+    const video = canMeetOnline(me.mode, p.mode)
+    if (reach === 'near' && !inRadius) continue
+    if (reach === 'online' && !video) continue
+    if (reach === 'both' && !inRadius && !video) continue
     if (q.skill) {
       if (q.skillSide === 'wants') {
         if (!p.wants.includes(q.skill)) continue

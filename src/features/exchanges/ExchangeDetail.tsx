@@ -9,7 +9,7 @@ import { fullName, shortName } from '@/domain/people'
 import { buildIcs } from '@/domain/slots'
 import { downloadText } from '@/lib/download'
 import { useVideo } from '@/providers/video'
-import { type Exchange, useApp } from '@/store/app'
+import { type Exchange, TRIAL_MINUTES, useApp } from '@/store/app'
 import { useNow, useT } from '@/store/hooks'
 import { Avatar } from '@/ui/Avatar'
 import { Empty, Stars } from '@/ui/bits'
@@ -157,7 +157,7 @@ export function icsEvent(ex: Exchange, name: string, tr: ReturnType<typeof useT>
   return {
     uid: ex.id,
     start: ex.slot!,
-    minutes: Math.max(ex.giveHours, ex.getHours, 1) * 60 * (ex.give && ex.get ? 2 : 1),
+    minutes: ex.trial ? TRIAL_MINUTES : Math.max(ex.giveHours, ex.getHours, 1) * 60 * (ex.give && ex.get ? 2 : 1),
     title: `Baratto Skill · ${name}`,
     description: parts.join(' / '),
     location: ex.mode === 'online' ? tr.m.modes.online : place,

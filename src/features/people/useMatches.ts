@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { comuneById } from '@/content/comuni'
-import { findMatches, type Match, type MatchQuery } from '@/domain/matching'
+import { defaultReach, findMatches, type Match, type MatchQuery } from '@/domain/matching'
 import type { Person } from '@/domain/types'
 import { allPeople, findPerson, useApp } from '@/store/app'
 
@@ -25,7 +25,7 @@ export function useMatches(q: Partial<MatchQuery> = {}): Match[] {
   return useMemo(() => {
     if (!me) return []
     const center = q.center ?? comuneById(me.comuneId)!
-    return findMatches(me, people, { radiusKm: me.radiusKm, ...q, center })
+    return findMatches(me, people, { radiusKm: me.radiusKm, reach: defaultReach(me.mode), ...q, center })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me, people, key])
 }

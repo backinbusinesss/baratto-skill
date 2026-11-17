@@ -9,7 +9,7 @@ import { comuneById } from '@/content/comuni'
 import { countKinds } from '@/domain/matching'
 import { isPremium } from '@/domain/plans'
 import { balance } from '@/domain/timebank'
-import { findTriads } from '@/domain/triads'
+import { findChains } from '@/domain/triads'
 import { useApp } from '@/store/app'
 import { useT } from '@/store/hooks'
 import { activeCount, incomingPending, nextAppointment } from '@/store/selectors'
@@ -36,7 +36,7 @@ export function Home() {
   const next = nextAppointment(state)
   const people = usePeople()
   const city = comuneById(me.comuneId)!
-  const triads = useMemo(() => findTriads(me, people, city, me.radiusKm, 3), [me, people, city])
+  const chains = useMemo(() => findChains(me, people, city, me.radiusKm, 3), [me, people, city])
   const hour = new Date().getHours()
   const greet = hour < 13 ? 'home.morning' : hour < 18 ? 'home.afternoon' : 'home.evening'
 
@@ -54,7 +54,7 @@ export function Home() {
           <div>
             <p className="flex items-center gap-2 text-sm text-white/70">
               <MapPin size={15} className="text-yellow" />
-              {tr.t('home.sub', { people: tr.t('common.people', { count: matches.length }), km: me.radiusKm, city: city.name })}
+              {tr.t('home.sub', { people: tr.t('common.people', { count: matches.filter((m) => !m.remote).length }), km: me.radiusKm, city: city.name })}
             </p>
             <h1 className="display mt-3 text-[2.6rem] text-white sm:text-[3.6rem]">{tr.t(greet, { name: me.name })}</h1>
             <div className="mt-6 flex flex-wrap gap-2">
@@ -131,24 +131,30 @@ export function Home() {
       <Section title={tr.t('home.triadsTitle')}>
         <p className="-mt-1 mb-4 max-w-2xl text-muted">{tr.t('home.triadsText')}</p>
         {isPremium(plan) ? (
-          triads.length ? (
+          chains.length ? (
             <div className="grid gap-4 md:grid-cols-3">
-              {triads.map((t) => (
-                <Link key={t.b.id + t.c.id} href={`/app/persona/?id=${t.b.id}`} className="sheet block p-4 hover:border-line-strong">
-                  <TriadLoop me={me.name} b={t.b} c={t.c} />
-                  <ol className="mt-3 space-y-1 text-sm">
-                    <li>
-                      <strong>{tr.t('common.you')}</strong> → {t.b.first}: {tr.skill(t.toB)}
-                    </li>
-                    <li>
-                      <strong>{t.b.first}</strong> → {t.c.first}: {tr.skill(t.toC)}
-                    </li>
-                    <li>
-                      <strong>{t.c.first}</strong> → {tr.t('common.you').toLowerCase()}: <span className="font-semibold text-mint-ink">{tr.skill(t.toMe)}</span>
-                    </li>
-                  </ol>
-                </Link>
-              ))}
+              {chains.map((ch) => {
+                const names = [tr.t('common.you'), ...ch.people.map((p) => p.first)]
+                return (
+                  <Link key={ch.people.map((p) => p.id).join('-')} href={`/app/persona/?id=${ch.people[0].id}`} className="sheet block p-4 hover:border-line-strong">
+                    <div className="mb-1 text-center text-xs font-bold uppercase tracking-wide text-muted">
+                      {tr.t(ch.people.length === 2 ? 'home.chain3' : 'home.chain4')}
+                    </div>
+                    <ChainLoop me={me.name} people={ch.people} />
+                    <ol className="mt-3 space-y-1 text-sm">
+                      {ch.skills.map((sk, k) => {
+                        const last = k === ch.skills.length - 1
+                        return (
+                          <li key={k}>
+                            <strong>{names[k]}</strong> → {last ? tr.t('common.you').toLowerCase() : names[k + 1]}:{' '}
+                            <span className={last ? 'font-semibold text-mint-ink' : undefined}>{tr.skill(sk)}</span>
+                          </li>
+                        )
+                      })}
+                    </ol>
+                  </Link>
+                )
+              })}
             </div>
           ) : (
             <Empty>{tr.t('people.empty')}</Empty>
@@ -187,22 +193,24 @@ export function Home() {
   )
 }
 
-/** Tre avatar in cerchio con le frecce: il giro dello scambio a tre. */
-function TriadLoop({ me, b, c }: { me: string; b: { id: string; first: string; last: string }; c: { id: string; first: string; last: string } }) {
+/** Gli avatar del giro su un poligono tratteggiato: triangolo per tre, quadrato per quattro. */
+function ChainLoop({ me, people }: { me: string; people: { id: string; first: string; last: string }[] }) {
+  const n = people.length + 1
+  const pts = Array.from({ length: n }, (_, k) => {
+    const a = -Math.PI / 2 + (k * 2 * Math.PI) / n
+    return { x: 80 + Math.cos(a) * 58, y: 60 + Math.sin(a) * 44 }
+  })
+  const nodes = [{ seed: `me-${me}`, name: me }, ...people.map((p) => ({ seed: p.id, name: `${p.first} ${p.last}` }))]
   return (
-    <div className="relative mx-auto h-28 w-40">
-      <svg viewBox="0 0 160 112" className="absolute inset-0 text-line-strong" aria-hidden>
-        <path d="M80 22 L138 88 L22 88 Z" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="5 4" />
+    <div className="relative mx-auto h-[120px] w-40">
+      <svg viewBox="0 0 160 120" className="absolute inset-0 text-line-strong" aria-hidden>
+        <path d={`M${pts.map((p) => `${p.x} ${p.y}`).join(' L')} Z`} fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="5 4" />
       </svg>
-      <span className="absolute left-1/2 top-0 -translate-x-1/2">
-        <Avatar seed={`me-${me}`} name={me} size={40} />
-      </span>
-      <span className="absolute bottom-0 right-0">
-        <Avatar seed={b.id} name={`${b.first} ${b.last}`} size={40} />
-      </span>
-      <span className="absolute bottom-0 left-0">
-        <Avatar seed={c.id} name={`${c.first} ${c.last}`} size={40} />
-      </span>
+      {nodes.map((nd, k) => (
+        <span key={nd.seed} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: pts[k].x, top: pts[k].y }}>
+          <Avatar seed={nd.seed} name={nd.name} size={36} />
+        </span>
+      ))}
     </div>
   )
 }

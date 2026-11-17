@@ -1,6 +1,6 @@
 'use client'
 
-import { Crown, Gift, Hourglass, Send } from 'lucide-react'
+import { Crown, Gift, Hourglass, Send, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
@@ -12,7 +12,7 @@ import { balance, exchangeDelta } from '@/domain/timebank'
 import type { Person } from '@/domain/types'
 import { skillPhrase } from '@/i18n/compose'
 import { cx } from '@/lib/cx'
-import { proposalsThisMonth, type ProposeResult, useApp } from '@/store/app'
+import { proposalsThisMonth, type ProposeResult, TRIAL_MINUTES, trialUsed, useApp } from '@/store/app'
 import { useT } from '@/store/hooks'
 import { SkillIcon } from '@/ui/Icon'
 import { Sheet } from '@/ui/Sheet'
@@ -39,6 +39,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
   const [give, setGive] = useState<string | null>(null)
   const [get, setGet] = useState<string | null>(null)
   const [hours, setHours] = useState(1)
+  const [trial, setTrial] = useState(false)
   const [slots, setSlots] = useState<string[]>([])
   const [mode, setMode] = useState<'live' | 'online'>('live')
   const [note, setNote] = useState('')
@@ -52,6 +53,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
     setGive(r && !theyWant.size ? null : g)
     setGet(r)
     setSlots([])
+    setTrial(false)
     setError(null)
     setTouchedNote(false)
     setMode(person.mode === 'online' || me.mode === 'online' ? 'online' : 'live')
@@ -62,14 +64,23 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
   useEffect(() => {
     if (touchedNote) return
     const vars = { name: person.first, give: give ? skillPhrase(tr, give) : '', get: get ? skillPhrase(tr, get) : '' }
-    setNote(give && get ? tr.t('propose.defaultMessage', vars) : give ? tr.t('propose.defaultMessageGift', vars) : get ? tr.t('propose.defaultMessageHours', vars) : '')
-  }, [give, get, person, tr, touchedNote])
+    setNote(trial && get ? tr.t('propose.defaultMessageTrial', vars) : give && get ? tr.t('propose.defaultMessage', vars) : give ? tr.t('propose.defaultMessageGift', vars) : get ? tr.t('propose.defaultMessageHours', vars) : '')
+  }, [give, get, person, tr, touchedNote, trial])
 
   const options = useMemo(() => slotOptions(me.avail, person.avail, new Date(), 14), [me, person])
   const shown = options.filter((o) => o.shared).length >= 3 ? options.filter((o) => o.shared) : options
+  // durante la prova non insegno nulla: conta solo la competenza che imparo
   const onlineOk =
-    (!give || !!skillById(give)?.online) && (!get || !!skillById(get)?.online) && me.mode !== 'live' && person.mode !== 'live'
+    (trial || !give || !!skillById(give)?.online) && (!get || !!skillById(get)?.online) && me.mode !== 'live' && person.mode !== 'live'
   const liveOk = modesCompatible(me.mode, person.mode) && person.mode !== 'online' && me.mode !== 'online'
+  // prova: serve qualcosa da imparare che si possa fare in videochiamata, ed entrambi devono accettarla
+  const trialOk = !!get && !!skillById(get)?.online && me.mode !== 'live' && person.mode !== 'live' && !trialUsed(exchanges, person.id)
+  useEffect(() => {
+    if (trial && !trialOk) setTrial(false)
+  }, [trial, trialOk])
+  useEffect(() => {
+    if (trial) setMode('online')
+  }, [trial])
   // se la modalità scelta non è più possibile, passa all'altra
   useEffect(() => {
     if (mode === 'online' && !onlineOk && liveOk) setMode('live')
@@ -77,7 +88,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
   }, [mode, onlineOk, liveOk])
 
   const from = balance(ledger)
-  const delta = exchangeDelta(give ? hours : 0, get ? hours : 0)
+  const delta = trial ? 0 : exchangeDelta(give ? hours : 0, get ? hours : 0)
   const limits = limitsFor(plan)
   const used = proposalsThisMonth(exchanges)
   const remaining = limits.proposalsPerMonth === null ? null : Math.max(0, limits.proposalsPerMonth - used)
@@ -85,7 +96,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
   const send = () => {
     if (!give && !get) return setError('skill')
     if (!slots.length) return setError('slot')
-    const r = propose({ personId: person.id, give, get, hours, slots, mode, note })
+    const r = propose({ personId: person.id, give: trial ? null : give, get, hours, slots, mode: trial ? 'online' : mode, note, trial })
     if (r.result !== 'ok') return setError(r.result)
     toast({ text: tr.t('propose.sent', { name: person.first }), tone: 'ok', icon: <Send size={18} /> })
     onClose()
@@ -103,7 +114,9 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
             ? tr.t('propose.limitActive', { n: limits.activeExchanges ?? 0 })
             : error === 'balance'
               ? tr.t('propose.limitBalance')
-              : null
+              : error === 'trial-used'
+                ? tr.t('propose.trialUsed', { name: person.first })
+                : null
 
   return (
     <Sheet
@@ -126,7 +139,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
           )}
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs text-muted">
-              {delta === 0 ? tr.t('propose.balanceEven') : tr.t('propose.balanceEffect', { from: tr.num(from), to: tr.num(from + delta) })}
+              {trial ? tr.t('propose.trialFree') : delta === 0 ? tr.t('propose.balanceEven') : tr.t('propose.balanceEffect', { from: tr.num(from), to: tr.num(from + delta) })}
               {remaining !== null && (
                 <>
                   <br />
@@ -142,7 +155,7 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
       }
     >
       <div className="grid gap-5 md:grid-cols-2">
-        <fieldset>
+        <fieldset disabled={trial} className={cx(trial && 'opacity-40')}>
           <legend className="mb-2 font-bold">{tr.t('propose.give')}</legend>
           <div className="flex flex-wrap gap-1.5">
             {myOffers.map((o) => (
@@ -175,18 +188,22 @@ export function ProposeSheet({ person, open, onClose, initialGet }: { person: Pe
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         <fieldset>
           <legend className="mb-2 font-bold">{tr.t('propose.duration')}</legend>
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {DURATIONS.map((h) => (
-              <button key={h} type="button" className={cx('chip !min-h-10 !px-4', hours === h && 'on')} aria-pressed={hours === h} onClick={() => setHours(h)}>
+              <button key={h} type="button" className={cx('chip !min-h-10 !px-4', !trial && hours === h && 'on')} aria-pressed={!trial && hours === h} onClick={() => { setTrial(false); setHours(h) }}>
                 {tr.t('common.hoursShort', { count: tr.num(h) })}
               </button>
             ))}
+            <button type="button" disabled={!trialOk} className={cx('chip !min-h-10 !px-4', trial && 'on', !trialOk && 'opacity-40')} aria-pressed={trial} onClick={() => setTrial(true)}>
+              <Sparkles size={14} /> {tr.t('propose.trial', { min: TRIAL_MINUTES })}
+            </button>
           </div>
+          <p className="mt-1.5 text-xs text-muted">{trialOk || trial ? tr.t('propose.trialHint', { min: TRIAL_MINUTES }) : tr.t('propose.trialUnavailable')}</p>
         </fieldset>
         <fieldset>
           <legend className="mb-2 font-bold">{tr.t('propose.mode')}</legend>
           <div className="flex gap-1.5">
-            <button type="button" disabled={!liveOk} className={cx('chip !min-h-10 !px-4', mode === 'live' && 'on', !liveOk && 'opacity-40')} aria-pressed={mode === 'live'} onClick={() => setMode('live')}>
+            <button type="button" disabled={!liveOk || trial} className={cx('chip !min-h-10 !px-4', mode === 'live' && 'on', !liveOk && 'opacity-40')} aria-pressed={mode === 'live'} onClick={() => setMode('live')}>
               {tr.m.modes.live}
             </button>
             <button type="button" disabled={!onlineOk} className={cx('chip !min-h-10 !px-4', mode === 'online' && 'on', !onlineOk && 'opacity-40')} aria-pressed={mode === 'online'} onClick={() => setMode('online')}>

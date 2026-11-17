@@ -30,6 +30,7 @@
 | Scambio | `/app/scambio/?id=…` | Accetta, scegli l'orario, accetta un nuovo orario, segna come fatto, recensisci, videochiamata (online), esporta in calendario. |
 | Chat | `/app/chat/?id=…` | Chat demo con risposte automatiche e "sta scrivendo…". |
 | Agenda | `/app/agenda/` | Calendario del mese, appuntamenti in programma e passati, **esportazione `.ics`**. |
+| Workshop | `/app/workshop/` | Lezioni di gruppo vicine o in videochiamata, pagate in ore; con Premium ne organizzi uno e incassi le ore di tutti i partecipanti. |
 | Ore | `/app/ore/` | Saldo della banca del tempo, ore date e ricevute, grafico degli ultimi 6 mesi, movimenti. |
 | Profilo | `/app/profilo/` | Modifica del profilo, **19 badge**, recensioni ricevute, chi ha visto il profilo (Premium), persone salvate, lingua, tema, account, piano. |
 | Premium | `/app/premium/` | Piani, confronto, checkout demo. |
@@ -46,7 +47,9 @@ In [`src/domain/matching.ts`](src/domain/matching.ts):
 - **può insegnarti** / **vuole imparare da te**: incrocio a metà, si compensa con le ore;
 - il punteggio tiene conto di distanza, livello, fasce orarie in comune, valutazione, modalità (dal vivo / online) e del **profilo in evidenza** dei Premium.
 
-Gli **scambi a tre** ([`triads.ts`](src/domain/triads.ts)) cercano il giro io → B → C → io quando nessuno dei due ha ciò che cerca l'altro.
+Gli **scambi a tre** ([`triads.ts`](src/domain/triads.ts)) cercano il giro io → B → C → io quando nessuno dei due ha ciò che cerca l'altro, e le **catene a quattro** il giro io → B → X → C → io.
+- **videochiamata oltre il raggio**: se nel profilo accetti la videochiamata, in Vicini puoi cercare "Vicino a me", "In videochiamata" (tutta Italia) o "Entrambi";
+- **lezione di prova**: 15 minuti gratis in videochiamata, senza ore, una per persona.
 
 ### Banca del tempo e piani
 - 2 ore di benvenuto; un'ora insegnata = +1, un'ora ricevuta = −1; si può andare in rosso fino a **−3** ([`timebank.ts`](src/domain/timebank.ts)).

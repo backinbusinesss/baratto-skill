@@ -1,6 +1,6 @@
 'use client'
 
-import { Crown, List, Map as MapIcon, Search, SlidersHorizontal, X } from 'lucide-react'
+import { Crown, List, Map as MapIcon, MapPin, Search, SlidersHorizontal, Video, X } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
@@ -8,7 +8,7 @@ import { CATEGORIES, type CategoryId } from '@/content/categories'
 import { comuneById } from '@/content/comuni'
 import { comuniWithin } from '@/domain/geo'
 import { SKILLS } from '@/content/skills'
-import type { SortKey } from '@/domain/matching'
+import { defaultReach, type Reach, type SortKey } from '@/domain/matching'
 import { clampRadius, isPremium, limitsFor } from '@/domain/plans'
 import { LEVELS, type Level } from '@/domain/types'
 import { cx } from '@/lib/cx'
@@ -37,6 +37,8 @@ export function People() {
   const [skill, setSkill] = useState(params.get('skill') ?? '')
   const [minLevel, setMinLevel] = useState<Level | 0>(0)
   const [mode, setMode] = useState<'any' | 'live' | 'online'>('any')
+  const [reach, setReach] = useState<Reach>(defaultReach(me.mode))
+  const videoOn = me.mode !== 'live'
   const [availOnly, setAvailOnly] = useState(false)
   const [verifiedOnly, setVerifiedOnly] = useState(false)
   const [text, setText] = useState('')
@@ -52,6 +54,7 @@ export function People() {
     skill: skill || undefined,
     minLevel: premium && minLevel ? minLevel : undefined,
     mode,
+    reach: videoOn ? reach : 'near',
     availOnly: premium && availOnly,
     verifiedOnly: premium && verifiedOnly,
     text,
@@ -99,6 +102,22 @@ export function People() {
             <SlidersHorizontal size={17} /> <span className="hidden sm:inline">{tr.t('common.filters')}</span>
             {activeFilters > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-cobalt px-1 text-[0.7rem] font-bold text-on-cobalt">{activeFilters}</span>}
           </button>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-1.5" role="group" aria-label={tr.t('people.reach')}>
+          {(['near', 'online', 'both'] as Reach[]).map((r) => {
+            const on = (videoOn ? reach : 'near') === r
+            return (
+              <button key={r} className={cx('chip !min-h-9', on && 'on', !videoOn && r !== 'near' && 'opacity-40')} aria-pressed={on} disabled={!videoOn && r !== 'near'} onClick={() => setReach(r)}>
+                {r === 'near' ? <MapPin size={14} /> : r === 'online' ? <Video size={14} /> : null}
+                {tr.t(`people.reach_${r}`)}
+              </button>
+            )
+          })}
+          {!videoOn && (
+            <Link href="/app/profilo/" className="text-xs font-semibold text-muted underline underline-offset-2 hover:text-ink">
+              {tr.t('people.reachEnable')}
+            </Link>
+          )}
         </div>
         <ScrollRow className="mt-2" innerClassName="items-center gap-1.5 pb-1">
           {(['best', 'near', 'rating', 'new'] as SortKey[]).map((s) => (

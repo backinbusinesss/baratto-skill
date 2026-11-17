@@ -1,6 +1,6 @@
 'use client'
 
-import { Star } from 'lucide-react'
+import { Star, Video } from 'lucide-react'
 import Link from 'next/link'
 import { comuneById } from '@/content/comuni'
 import { formatKm } from '@/domain/geo'
@@ -56,6 +56,11 @@ export function PersonFlyer({ match, className }: { match: Match; className?: st
               <span>
                 {city} · {formatKm(match.distKm, tr.locale)}
               </span>
+              {match.remote && (
+                <span className="inline-flex items-center gap-1 font-semibold text-cobalt">
+                  <Video size={12} /> {tr.t('people.byVideo')}
+                </span>
+              )}
               {p.reviews > 0 && (
                 <span className="inline-flex items-center gap-0.5 font-semibold text-ink">
                   <Star size={12} fill="var(--yellow)" stroke="var(--yellow-ink)" />

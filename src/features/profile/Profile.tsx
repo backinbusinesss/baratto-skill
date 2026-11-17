@@ -367,6 +367,7 @@ function EditProfile({ open, onClose }: { open: boolean; onClose(): void }) {
               </button>
             ))}
           </div>
+          <p className="mt-2 text-sm text-muted">{tr.t(draft.mode === 'live' ? 'profile.videoOff' : 'profile.videoOn')}</p>
         </div>
       )}
     </Sheet>

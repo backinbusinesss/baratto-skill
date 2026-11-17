@@ -5,11 +5,12 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import { comuneById } from '@/content/comuni'
 import { findMatches } from '@/domain/matching'
 import { generateNeighbors, getPeople, personById as basePersonById } from '@/domain/people'
-import { canPropose, clampRadius, type PlanId, type ProposeCheck } from '@/domain/plans'
+import { canPropose, clampRadius, limitsFor, type PlanId, type ProposeCheck } from '@/domain/plans'
 import { hashString, mulberry32, pick } from '@/domain/rng'
 import { bestSlots } from '@/domain/slots'
 import { balance, canAfford, exchangeDelta, type LedgerEntry, WELCOME_HOURS } from '@/domain/timebank'
 import { availBit, type Me, type Mode, type Person } from '@/domain/types'
+import { hostEarnings, simulatedSignups, type Workshop, workshopCost } from '@/domain/workshops'
 import { detectLang, getT, interpolate, type Lang } from '@/i18n'
 import { skillPhrase } from '@/i18n/compose'
 import { safeStorage } from '@/lib/storage'
@@ -41,6 +42,8 @@ export interface Exchange {
   slots: string[]
   slot: string | null
   mode: 'live' | 'online'
+  /** lezione di prova: 15 minuti in videochiamata, senza ore */
+  trial?: boolean
   /** quando arriverà la risposta simulata (ms), solo per le proposte inviate in attesa */
   replyAt?: number
   outcome?: Outcome
@@ -48,6 +51,27 @@ export interface Exchange {
   theirReview?: Review
   completedAt?: string
 }
+
+/** Un workshop a cui partecipo o che ho organizzato. */
+export interface MyWorkshop {
+  ws: Workshop
+  role: 'guest' | 'host'
+  status: 'booked' | 'done' | 'cancelled'
+  /** quando l'ho prenotato o pubblicato (ms) */
+  createdAt: number
+  /** solo per chi organizza: partecipanti al momento della chiusura */
+  participants?: number
+}
+
+export interface HostWorkshopInput {
+  skill: string
+  at: string
+  minutes: Workshop['minutes']
+  mode: Workshop['mode']
+  capacity: number
+}
+
+export type JoinResult = 'ok' | 'balance' | 'full' | 'already'
 
 export interface ChatMessage {
   id: string
@@ -77,6 +101,7 @@ export interface AppData {
   planSince: string | null
   saved: string[]
   messagesSent: number
+  workshops: MyWorkshop[]
   settings: Settings
 }
 
@@ -93,9 +118,17 @@ export interface ProposeInput {
   slots: string[]
   mode: 'live' | 'online'
   note: string
+  /** lezione di prova gratuita da 15 minuti (solo in videochiamata, una per persona) */
+  trial?: boolean
 }
 
-export type ProposeResult = ProposeCheck | 'balance'
+export const TRIAL_MINUTES = 15
+
+export type ProposeResult = ProposeCheck | 'balance' | 'trial-used'
+
+/** Una sola lezione di prova per persona, a meno che quella precedente sia stata rifiutata o annullata. */
+export const trialUsed = (exchanges: Exchange[], personId: string) =>
+  exchanges.some((e) => e.trial && e.personId === personId && e.status !== 'declined' && e.status !== 'cancelled')
 
 export interface AppActions {
   completeOnboarding(me: Me): void
@@ -110,6 +143,11 @@ export interface AppActions {
   sendMessage(personId: string, text: string, now?: number): void
   markRead(personId: string): void
   toggleSaved(personId: string): void
+  joinWorkshop(ws: Workshop): JoinResult
+  leaveWorkshop(id: string): void
+  hostWorkshop(input: HostWorkshopInput, now?: number): 'ok' | 'premium'
+  /** chiude un workshop: chi organizza incassa le ore dei partecipanti */
+  completeWorkshop(id: string, now?: number): number
   setPlan(plan: PlanId): void
   setLang(lang: Lang): void
   setTheme(theme: Theme): void
@@ -136,6 +174,7 @@ export function initialData(lang: Lang = 'it'): AppData {
     planSince: null,
     saved: [],
     messagesSent: 0,
+    workshops: [],
     settings: { lang, theme: 'system' },
   }
 }
@@ -200,6 +239,7 @@ export function sanitize(raw: unknown, lang: Lang = 'it'): AppData {
     pendingReplies: d.pendingReplies && typeof d.pendingReplies === 'object' ? d.pendingReplies : {},
     ledger: Array.isArray(d.ledger) ? d.ledger : [],
     saved: Array.isArray(d.saved) ? d.saved : [],
+    workshops: Array.isArray(d.workshops) ? d.workshops : [],
     plan: d.plan === 'premium-monthly' || d.plan === 'premium-yearly' ? d.plan : 'free',
     settings: {
       lang: d.settings?.lang === 'en' ? 'en' : d.settings?.lang === 'it' ? 'it' : lang,
@@ -434,8 +474,11 @@ export const useApp = create<AppState>()(
           activeExchanges: s.exchanges.filter(countsTowardLimit).length,
         })
         if (check !== 'ok') return { result: check }
-        const giveHours = input.give ? input.hours : 0
-        const getHours = input.get ? input.hours : 0
+        const trial = !!input.trial && !!input.get
+        if (trial && trialUsed(s.exchanges, input.personId)) return { result: 'trial-used' }
+        if (trial) input = { ...input, give: null, mode: 'online' }
+        const giveHours = !trial && input.give ? input.hours : 0
+        const getHours = !trial && input.get ? input.hours : 0
         if (!canAfford(balance(s.ledger), exchangeDelta(giveHours, getHours))) return { result: 'balance' }
         const p = findPerson(s.neighbors, input.personId)
         const id = uid('x')
@@ -452,6 +495,7 @@ export const useApp = create<AppState>()(
           slots: input.slots,
           slot: null,
           mode: input.mode,
+          ...(trial ? { trial: true } : {}),
           outcome: outcomeFor(id),
           // risposta simulata tra 4 e 9 secondi
           replyAt: now + 4000 + (hashString(id) % 5000),
@@ -548,6 +592,63 @@ export const useApp = create<AppState>()(
         set({ saved: saved.includes(personId) ? saved.filter((x) => x !== personId) : [...saved, personId] })
       },
 
+      joinWorkshop(ws) {
+        const s = get()
+        if (s.workshops.some((w) => w.ws.id === ws.id && w.status === 'booked')) return 'already'
+        if (ws.taken >= ws.capacity) return 'full'
+        if (!canAfford(balance(s.ledger), -ws.costHours)) return 'balance'
+        const now = Date.now()
+        set({
+          workshops: [{ ws: { ...ws, taken: ws.taken + 1 }, role: 'guest', status: 'booked', createdAt: now }, ...s.workshops.filter((w) => w.ws.id !== ws.id)],
+          ledger: [...s.ledger, { id: uid('l'), at: iso(now), hours: -ws.costHours, kind: 'workshop', personId: ws.hostId, skill: ws.skill }],
+        })
+        return 'ok'
+      },
+
+      leaveWorkshop(id) {
+        const s = get()
+        const mine = s.workshops.find((w) => w.ws.id === id && w.status === 'booked')
+        if (!mine) return
+        const now = Date.now()
+        set({
+          workshops: s.workshops.map((w) => (w === mine ? { ...w, status: 'cancelled' } : w)),
+          // chi partecipa riprende le ore; chi organizza annulla e basta (non ha ancora incassato)
+          ledger: mine.role === 'guest' ? [...s.ledger, { id: uid('l'), at: iso(now), hours: mine.ws.costHours, kind: 'refund', skill: mine.ws.skill }] : s.ledger,
+        })
+      },
+
+      hostWorkshop(input, now = Date.now()) {
+        const s = get()
+        if (!limitsFor(s.plan).hostWorkshops || !s.me) return 'premium'
+        const ws: Workshop = {
+          id: uid('ws'),
+          hostId: 'me',
+          skill: input.skill,
+          at: input.at,
+          minutes: input.minutes,
+          mode: input.mode,
+          capacity: input.capacity,
+          taken: 0,
+          costHours: workshopCost(input.minutes),
+          comuneId: s.me.comuneId,
+        }
+        set({ workshops: [{ ws, role: 'host', status: 'booked', createdAt: now }, ...s.workshops] })
+        return 'ok'
+      },
+
+      completeWorkshop(id, now = Date.now()) {
+        const s = get()
+        const mine = s.workshops.find((w) => w.ws.id === id && w.status === 'booked')
+        if (!mine) return 0
+        const participants = mine.role === 'host' ? simulatedSignups(id, mine.ws.capacity, mine.createdAt, now) : undefined
+        const earned = participants ? hostEarnings(mine.ws, participants) : 0
+        set({
+          workshops: s.workshops.map((w) => (w === mine ? { ...w, status: 'done', participants } : w)),
+          ledger: earned ? [...s.ledger, { id: uid('l'), at: iso(now), hours: earned, kind: 'workshopHosted', skill: mine.ws.skill }] : s.ledger,
+        })
+        return earned
+      },
+
       setPlan(plan) {
         const s = get()
         set({
@@ -625,7 +726,7 @@ export const useApp = create<AppState>()(
       version: 1,
       storage: createJSONStorage(() => safeStorage),
       partialize: (s) => {
-        const { completeOnboarding, enterDemo, updateMe, propose, respond, acceptCounter, cancel, complete, review, sendMessage, markRead, toggleSaved, setPlan, setLang, setTheme, tick, reset, ...data } = s
+        const { completeOnboarding, enterDemo, updateMe, propose, respond, acceptCounter, cancel, complete, review, sendMessage, markRead, toggleSaved, joinWorkshop, leaveWorkshop, hostWorkshop, completeWorkshop, setPlan, setLang, setTheme, tick, reset, ...data } = s
         return data
       },
       migrate: (persisted) => sanitize(persisted),

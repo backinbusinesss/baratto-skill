@@ -53,7 +53,9 @@ export function ExchangeTicket({ ex, actions }: { ex: Exchange; actions?: React.
             <div className="flex gap-2">
               <dt className="w-[4.6rem] shrink-0 text-muted">{tr.t('exchanges.youGive')}</dt>
               <dd className="min-w-0 truncate font-semibold">
-                {ex.give ? (
+                {ex.trial ? (
+                  <span className="text-muted">—</span>
+                ) : ex.give ? (
                   <span className="inline-flex items-center gap-1.5">
                     <SkillIcon id={ex.give} size={14} className="shrink-0 text-cobalt" />
                     {`${tr.skill(ex.give)} · ${tr.t('common.hoursShort', { count: tr.num(ex.giveHours) })}`}
@@ -71,7 +73,7 @@ export function ExchangeTicket({ ex, actions }: { ex: Exchange; actions?: React.
                 {ex.get ? (
                   <span className="inline-flex items-center gap-1.5">
                     <SkillIcon id={ex.get} size={14} className="shrink-0 text-mint-ink" />
-                    {`${tr.skill(ex.get)} · ${tr.t('common.hoursShort', { count: tr.num(ex.getHours) })}`}
+                    {ex.trial ? `${tr.skill(ex.get)} · ${tr.t('exchanges.trial')}` : `${tr.skill(ex.get)} · ${tr.t('common.hoursShort', { count: tr.num(ex.getHours) })}`}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 text-muted">

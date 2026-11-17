@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeftRight, CalendarDays, Compass, Crown, Home, Hourglass, MessageCircle, User, Users } from 'lucide-react'
+import { ArrowLeftRight, CalendarDays, Compass, Crown, GraduationCap, Home, Hourglass, MessageCircle, User, Users } from 'lucide-react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -40,6 +40,7 @@ const MORE: Item[] = [
   { href: '/app/esplora', key: 'nav.explore', icon: Compass },
   { href: '/app/agenda', key: 'nav.calendar', icon: CalendarDays },
   { href: '/app/ore', key: 'nav.hours', icon: Hourglass },
+  { href: '/app/workshop', key: 'nav.workshops', icon: GraduationCap },
 ]
 
 const ACTIVE_ALIASES: Record<string, string> = {

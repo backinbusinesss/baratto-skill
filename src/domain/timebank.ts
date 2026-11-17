@@ -3,7 +3,7 @@ export const WELCOME_HOURS = 2
 /** "fido di quartiere": si può andare in rosso fino a qui, poi si possono solo dare ore */
 export const MIN_BALANCE = -3
 
-export type LedgerKind = 'welcome' | 'gave' | 'received' | 'bonus' | 'refund'
+export type LedgerKind = 'welcome' | 'gave' | 'received' | 'bonus' | 'refund' | 'workshop' | 'workshopHosted'
 
 export interface LedgerEntry {
   id: string
@@ -38,8 +38,8 @@ export function monthlySeries(ledger: LedgerEntry[], months: number, now = new D
   for (const e of ledger) {
     const row = out.find((r) => r.key === e.at.slice(0, 7))
     if (!row) continue
-    if (e.kind === 'gave') row.gave += e.hours
-    if (e.kind === 'received') row.received += -e.hours
+    if (e.kind === 'gave' || e.kind === 'workshopHosted') row.gave += e.hours
+    if (e.kind === 'received' || e.kind === 'workshop') row.received += -e.hours
   }
   return out
 }
